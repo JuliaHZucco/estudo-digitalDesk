@@ -1,0 +1,25 @@
+﻿@model Capitulo01.Models.Departamento
+
+@{
+    ViewData["Title"] = "Criar Departamento";
+    Layout = "_LayoutIES";
+}
+
+
+<h2>Criar Departamento</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="Nome"></label>
+        <input asp-for="Nome" class="form-control" />
+        <span asp-validation-for="Nome" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Criar</button>
+    <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+</form>
+
+@section ScriptPage {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

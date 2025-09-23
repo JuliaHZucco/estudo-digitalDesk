@@ -67,11 +67,17 @@ namespace Capitulo01.Controllers
             return View(instituicoes.Where(i => i.InstituicaoID == id).First());
         }
 
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(Instituicao instituicao)
+        public ActionResult DeleteConfirmed(long id)
         {
-            instituicoes.Remove(instituicoes.Where(i => i.InstituicaoID == instituicao.InstituicaoID).First());
+            var instituicao = instituicoes.FirstOrDefault(i => i.InstituicaoID == id);
+            if (instituicao != null)
+            {
+                instituicoes.Remove(instituicao);
+                TempData["Message"] = "Instituição " + instituicao.Nome.ToUpper() + " foi removida";
+            }
+
             return RedirectToAction("Index");
         }
 

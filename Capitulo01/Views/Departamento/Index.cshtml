@@ -1,43 +1,39 @@
 ﻿@model IEnumerable<Capitulo01.Models.Departamento>
 
 @{
-    Layout = null;
+    ViewData["Title"] = "Departamentos";
+    Layout = "_LayoutIES";
 }
 
-<!DOCTYPE html>
+<div class="card mt-3">
+    <div class="card-header bg-primary text-white text-center h4">
+        Departamentos Registrados
+    </div>
+    <div class="card-body">
+        <p class="text-right">
+            <a asp-action="Create" class="btn btn-success">Criar Novo Departamento</a>
+        </p>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Index</title>
-</head>
-<body>
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Nome)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nome)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.DepartamentoID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.DepartamentoID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.DepartamentoID">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
-</body>
-</html>
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.First().Nome)</th>
+                    <th class="text-center">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.Nome)</td>
+                        <td class="text-center">
+                            <a asp-action="Edit" asp-route-id="@item.DepartamentoID" class="btn btn-sm btn-primary">Editar</a>
+                            <a asp-action="Details" asp-route-id="@item.DepartamentoID" class="btn btn-sm btn-info">Detalhes</a>
+                            <a asp-action="Delete" asp-route-id="@item.DepartamentoID" class="btn btn-sm btn-danger">Remover</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
