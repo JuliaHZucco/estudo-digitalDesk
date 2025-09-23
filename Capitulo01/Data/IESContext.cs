@@ -10,5 +10,6 @@ namespace Capitulo01.Data
         {
         }
         public DbSet<Departamento> Departamentos { get; set; }
+        public DbSet<Instituicao> Instituicoes { get; set; }
     }
 }

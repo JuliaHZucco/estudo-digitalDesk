@@ -1,6 +1,7 @@
 ﻿using Capitulo01.Data;
 using Capitulo01.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -15,31 +16,43 @@ namespace Capitulo01.Controllers
         {
             this._context = context;
         }
-        public async Task<IActionResult> Index()
+        
+            public async Task<IActionResult> Index()
         {
-            return View(await _context.Departamentos.OrderBy(c => c.Nome).ToListAsync());
+            var departamentos = await _context.Departamentos
+                                              .Include(d => d.Instituicao)
+                                              .OrderBy(d => d.Nome)
+                                              .ToListAsync();
+            return View(departamentos);
         }
+        
         public IActionResult Create()
         {
+            var instituicoes = _context.Instituicoes.OrderBy(i => i.Nome).ToList();
+            instituicoes.Insert(0, new Instituicao()
+            {
+                InstituicaoID = 0,
+                Nome = "Selecione	a	instituição"
+            });
+            ViewBag.Instituicoes = instituicoes;
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Nome")] Departamento departamento)
+        public async Task<IActionResult> Create([Bind("Nome,InstituicaoID")] Departamento departamento)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
                     _context.Add(departamento);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-
             }
             catch (DbUpdateException)
             {
-                ModelState.AddModelError("", "Não	foi	possível	inserir	osdados.");
+                ModelState.AddModelError("", "Não foi possível inserir os dados.");
             }
             return View(departamento);
         }
@@ -54,22 +67,26 @@ namespace Capitulo01.Controllers
             {
                 return NotFound();
             }
+            ViewBag.Instituicoes = new SelectList(_context.Instituicoes.OrderBy(b => b.Nome), "InstituicaoID", "Nome", departamento.InstituicaoID);
             return View(departamento);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long? id, [Bind("DepartamentoID,Nome")]	Departamento	departamento)
-{
+        public async Task<IActionResult> Edit(long? id, [Bind("DepartamentoID, Nome, InstituicaoID")] Departamento departamento)
+        {
             if (id != departamento.DepartamentoID)
             {
                 return NotFound();
             }
+
             if (ModelState.IsValid)
             {
                 try
                 {
                     _context.Update(departamento);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -82,8 +99,13 @@ namespace Capitulo01.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
             }
+
+            ViewBag.Instituicoes = new SelectList(_context.Instituicoes.OrderBy(b => b.Nome),
+                                                  "InstituicaoID",
+                                                  "Nome",
+                                                  departamento.InstituicaoID);
+
             return View(departamento);
         }
         private bool DepartamentoExists(long? id)
@@ -97,6 +119,7 @@ namespace Capitulo01.Controllers
                 return NotFound();
             }
             var departamento = await _context.Departamentos.SingleOrDefaultAsync(m => m.DepartamentoID == id);
+            _context.Instituicoes.Where(i => departamento.InstituicaoID == i.InstituicaoID).Load();
             if (departamento == null)
             {
                 return NotFound();
@@ -110,18 +133,21 @@ namespace Capitulo01.Controllers
                 return NotFound();
             }
             var departamento = await _context.Departamentos.SingleOrDefaultAsync(m => m.DepartamentoID == id);
+            _context.Instituicoes.Where(i => departamento.InstituicaoID == i.InstituicaoID).Load();
             if (departamento == null)
             {
                 return NotFound();
             }
             return View(departamento);
         }
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long? id)
         {
             var departamento = await _context.Departamentos.SingleOrDefaultAsync(m => m.DepartamentoID == id);
             _context.Departamentos.Remove(departamento);
+            TempData["Message"] = "Departamento	" + departamento.Nome.ToUpper() + "	foi	removido";
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

@@ -5,21 +5,57 @@
     Layout = "_LayoutIES";
 }
 
+@section Styles {
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/font-awesome/css/all.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/font-awesome.min.css"
+              asp-fallback-href="~/lib/font-awesome/css/all.css"
+              asp-fallback-test-class="sr-only"
+              asp-fallback-test-property="position"
+              asp-fallback-test-value="absolute" />
+    </environment>
+}
+
 <div class="card mt-3">
     <div class="card-header bg-secondary text-white text-center h4">
         Departamento
     </div>
     <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Nome)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Nome)
-            </dd>
-        </dl>
+        <div class="form-group">
+            <label asp-for="DepartamentoID" class="control-label"></label>
+            <div class="input-group mb-2">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">
+                        <i class="fa fa-key" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <input asp-for="DepartamentoID" class="form-control" disabled />
+            </div>
+
+            <label asp-for="Nome" class="control-label"></label>
+            <div class="input-group mb-2">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">
+                        <i class="fa fa-user-circle" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <input asp-for="Nome" class="form-control" disabled />
+            </div>
+
+            <label asp-for="Instituicao.Nome" class="control-label"></label>
+            <div class="input-group mb-2">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">
+                        <i class="fa fa-university" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <input asp-for="Instituicao.Nome" class="form-control" disabled />
+            </div>
+        </div>
     </div>
-    <div class="card-footer text-center">
+    <div class="card-footer text-center bg-info text-white">
         <a asp-action="Edit" asp-route-id="@Model.DepartamentoID" class="btn btn-warning">Editar</a>
         <a asp-action="Index" class="btn btn-info">Voltar à lista</a>
     </div>

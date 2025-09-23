@@ -20,6 +20,13 @@
                 <span asp-validation-for="Nome" class="text-danger"></span>
             </div>
 
+            <div class="form-group">
+                <label asp-for="InstituicaoID" class="control-label"></label>
+                <select asp-for="InstituicaoID" class="form-control"
+                        asp-items="@(ViewBag.Instituicoes)">
+                </select>
+            </div>
+
             <div class="form-group text-center">
                 <input type="submit" value="Salvar Alterações" class="btn btn-primary" />
                 <a asp-action="Index" class="btn btn-info">Voltar à lista</a>
@@ -33,5 +40,6 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+
 
 
