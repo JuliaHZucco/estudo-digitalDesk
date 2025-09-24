@@ -1,4 +1,5 @@
-﻿using Capitulo01.Data;
+﻿using Capitulo01.Models;
+using Capitulo01.Data;
 using Capitulo01.Models;
 using System.Linq;
 
@@ -10,28 +11,24 @@ namespace Capitulo01.Data
         {
             context.Database.EnsureCreated();
 
-            if (context.Departamentos.Any())
+            if (context.Departamentos.Any() || context.Instituicoes.Any())
             {
-                return;
+                return; 
             }
-            var instituicoes = new Instituicao[]
-            {
-                new Instituicao {   Nome="UniParaná",   Endereco="Paraná"},
-                new Instituicao {   Nome="UniAcre", Endereco="Acre"}
-            };
-            foreach (Instituicao i in instituicoes)
-            {
-                context.Instituicoes.Add(i);
-            }
+
+            var uniParana = new Instituicao { Nome = "UniParaná", Endereco = "Paraná" };
+            var uniAcre = new Instituicao { Nome = "UniAcre", Endereco = "Acre" };
+
+            context.Instituicoes.AddRange(uniParana, uniAcre);
             context.SaveChanges();
+
             var departamentos = new Departamento[]
-{
-                new Departamento    {   Nome="Ciência	da	Computação",    InstituicaoID=1 },
-                new Departamento    {   Nome="Ciência	de	Alimentos", InstituicaoID=2}};
-            foreach (Departamento d in departamentos)
             {
-                context.Departamentos.Add(d);
-            }
+                new Departamento { Nome = "Ciência da Computação", InstituicaoID = uniParana.InstituicaoID },
+                new Departamento { Nome = "Ciência de Alimentos", InstituicaoID = uniAcre.InstituicaoID }
+            };
+
+            context.Departamentos.AddRange(departamentos);
             context.SaveChanges();
         }
     }

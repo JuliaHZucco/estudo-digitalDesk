@@ -6,7 +6,6 @@
 
 @section Styles {
     <environment include="Development">
-        <link rel="stylesheet" href="~/lib/datatables/css/jquery.dataTables.min.css" />
         <link rel="stylesheet" href="~/lib/font-awesome/css/all.css" />
     </environment>
     <environment exclude="Development">
@@ -25,38 +24,50 @@
     </div>
 
     <div class="card-body">
-        <div class="form-group">
-            <label asp-for="InstituicaoID" class="control-label"></label>
-            <br />
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">
-                        <i class="fa fa-key" aria-hidden="true"></i>
-                    </span>
-                </div>
-                <input asp-for="InstituicaoID" class="form-control" disabled="disabled" />
-            </div>
+        <div class="row">
+            <div class="col-8">
+                <div class="form-group">
+                    <label asp-for="InstituicaoID" class="control-label"></label>
+                    <br />
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fa fa-key" aria-hidden="true"></i>
+                            </span>
+                        </div>
+                        <input asp-for="InstituicaoID" class="form-control" disabled="disabled" />
+                    </div>
 
-            <label asp-for="Nome" class="control-label"></label>
-            <br />
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">
-                        <i class="fa fa-user-circle" aria-hidden="true"></i>
-                    </span>
-                </div>
-                <input asp-for="Nome" class="form-control" disabled="disabled" />
-            </div>
+                    <label asp-for="Nome" class="control-label"></label>
+                    <br />
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fa fa-user-circle" aria-hidden="true"></i>
+                            </span>
+                        </div>
+                        <input asp-for="Nome" class="form-control" disabled="disabled" />
+                    </div>
 
-            <label asp-for="Endereco" class="control-label"></label>
-            <br />
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">
-                        <i class="fa fa-map-marker-alt" aria-hidden="true"></i>
-                    </span>
+                    <label asp-for="Endereco" class="control-label"></label>
+                    <br />
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fa fa-map-marker-alt" aria-hidden="true"></i>
+                            </span>
+                        </div>
+                        <input asp-for="Endereco" class="form-control" disabled="disabled" />
+                    </div>
                 </div>
-                <input asp-for="Endereco" class="form-control" disabled="disabled" />
+            </div>
+            <div class="col-4">
+                @{
+                    await Html.RenderPartialAsync(
+                    "~/Views/Instituicao/_ComDepartamentos.cshtml",
+                    Model.Departamentos.ToList()
+                    );
+                }
             </div>
         </div>
     </div>
@@ -66,4 +77,3 @@
         <a asp-action="Index" class="btn btn-warning">Retornar à listagem de instituições</a>
     </div>
 </div>
-
