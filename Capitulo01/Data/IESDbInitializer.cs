@@ -1,4 +1,4 @@
-﻿using Capitulo01.Models;
+﻿
 using Capitulo01.Data;
 using Capitulo01.Models;
 using System.Linq;
