@@ -36,24 +36,23 @@ namespace Capitulo01.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Nome,InstituicaoID")] Departamento departamento)
         {
+            Console.WriteLine("Entrou na action Create (POST) de Departamento."); 
             if (!departamento.InstituicaoID.HasValue || departamento.InstituicaoID == 0)
                 ModelState.AddModelError("InstituicaoID", "Selecione uma instituição válida.");
 
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                Console.WriteLine("ModelState inválido:");
-                foreach (var key in ModelState.Keys)
-                    foreach (var error in ModelState[key].Errors)
-                        Console.WriteLine($"{key}: {error.ErrorMessage}");
-
-                await PopularInstituicoesDropDown(departamento.InstituicaoID);
-                return View(departamento);
+                _context.Add(departamento);
+                await _context.SaveChangesAsync();
+                Console.WriteLine("Departamento criado com sucesso."); 
+                return RedirectToAction(nameof(Index));
             }
 
-            _context.Add(departamento);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            await PopularInstituicoesDropDown(departamento.InstituicaoID);
+            Console.WriteLine("ModelState inválido, retornando para a view."); 
+            return View(departamento);
         }
+
         public async Task<IActionResult> Edit(long? id)
         {
             if (id == null) return NotFound();
@@ -93,6 +92,18 @@ namespace Capitulo01.Controllers
             return View(departamento);
         }
 
+        public async Task<IActionResult> Details(long? id)
+        {
+            if (id == null) return NotFound();
+
+            var departamento = await _context.Departamentos
+                .Include(d => d.Instituicao)
+                .FirstOrDefaultAsync(d => d.DepartamentoID == id);
+
+            if (departamento == null) return NotFound();
+
+            return View(departamento);
+        }
         public async Task<IActionResult> Delete(long? id)
         {
             if (id == null) return NotFound();
