@@ -3,6 +3,7 @@ using Capitulo01.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -36,20 +37,20 @@ namespace Capitulo01.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Nome,InstituicaoID")] Departamento departamento)
         {
-            Console.WriteLine("Entrou na action Create (POST) de Departamento."); 
-            if (!departamento.InstituicaoID.HasValue || departamento.InstituicaoID == 0)
+            Debug.WriteLine("Entrou na Action Create (POST)");
+            if (!departamento.InstituicaoID.HasValue ||  departamento.InstituicaoID == 0)
                 ModelState.AddModelError("InstituicaoID", "Selecione uma instituição válida.");
 
             if (ModelState.IsValid)
             {
                 _context.Add(departamento);
                 await _context.SaveChangesAsync();
-                Console.WriteLine("Departamento criado com sucesso."); 
+                Debug.WriteLine("Dep criado com sucesso");
                 return RedirectToAction(nameof(Index));
             }
 
             await PopularInstituicoesDropDown(departamento.InstituicaoID);
-            Console.WriteLine("ModelState inválido, retornando para a view."); 
+            Debug.WriteLine("ModelState inválido");
             return View(departamento);
         }
 

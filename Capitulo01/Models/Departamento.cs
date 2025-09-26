@@ -9,6 +9,6 @@ namespace Capitulo01.Models
         public string Nome { get; set; }
         [Required(ErrorMessage = "Selecione uma instituição.")]
         public long? InstituicaoID { get; set; }  
-        public Instituicao Instituicao { get; set; }
+        public Instituicao? Instituicao { get; set; }
     }
 }
