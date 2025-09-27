@@ -1,5 +1,5 @@
 ﻿using Capitulo01.Data;
-using Capitulo01.Models;
+using Capitulo01.Models.Cadastros;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;

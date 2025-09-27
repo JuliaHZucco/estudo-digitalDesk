@@ -20,4 +20,8 @@
     <Folder Include="wwwroot\lib\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Class1\Class1.csproj" />
+  </ItemGroup>
+
 </Project>

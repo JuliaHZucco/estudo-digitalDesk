@@ -1,4 +1,4 @@
-﻿using Capitulo01.Models;
+﻿using Capitulo01.Models.Cadastros;
 using Microsoft.EntityFrameworkCore;
 
 namespace Capitulo01.Data

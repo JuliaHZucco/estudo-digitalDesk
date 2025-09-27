@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-namespace Capitulo01.Models
-{
+namespace Capitulo01.Models.Cadastros;
     public class Departamento
     {
         public long? DepartamentoID { get; set; }
@@ -11,4 +10,4 @@ namespace Capitulo01.Models
         public long? InstituicaoID { get; set; }  
         public Instituicao? Instituicao { get; set; }
     }
-}
+
