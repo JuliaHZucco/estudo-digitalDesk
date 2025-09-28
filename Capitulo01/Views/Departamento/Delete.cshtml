@@ -12,16 +12,9 @@
         Departamento
     </div>
     <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-2">ID</dt>
-            <dd class="col-sm-10">@Model.DepartamentoID</dd>
-
-            <dt class="col-sm-2">Nome</dt>
-            <dd class="col-sm-10">@Model.Nome</dd>
-
-            <dt class="col-sm-2">Instituição</dt>
-            <dd class="col-sm-10">@Model.Instituicao?.Nome</dd>
-        </dl>
+        @{
+            await Html.RenderPartialAsync("~/Views/Departamento/_PartialDetailsContentCard.cshtml", Model);
+        }
 
         <a asp-action="Index" class="btn btn-secondary">Voltar à lista</a>
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalConfirmationDelete">

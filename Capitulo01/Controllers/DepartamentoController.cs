@@ -6,30 +6,35 @@ using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Capitulo01.Data.DAL.Cadastros;
+
+
 
 namespace Capitulo01.Controllers
 {
     public class DepartamentoController : Controller
     {
         private readonly IESContext _context;
+        private readonly DepartamentoDAL departamentoDAL;
+        private readonly InstituicaoDAL instituicaoDAL;
 
         public DepartamentoController(IESContext context)
         {
-            _context = context ?? throw new System.ArgumentNullException(nameof(context));
+            _context = context;
+            departamentoDAL = new DepartamentoDAL(context);
+            instituicaoDAL = new InstituicaoDAL(context);
         }
 
         public async Task<IActionResult> Index()
         {
-            var departamentos = await _context.Departamentos
-                                              .Include(d => d.Instituicao)
-                                              .OrderBy(d => d.Nome)
-                                              .ToListAsync();
-            return View(departamentos);
+            return View(await departamentoDAL.ObterDepartamentosClassificadosPorNome().ToListAsync());
         }
 
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
-            await PopularInstituicoesDropDown();
+            var instituicoes = instituicaoDAL.ObterInstituicoesClassificadasPorNome().ToList();
+            instituicoes.Insert(0, new Instituicao { InstituicaoID = 0, Nome = "Selecione a instituição" });
+            ViewBag.Instituicoes = new SelectList(instituicoes, "InstituicaoID", "Nome");
             return View();
         }
 
@@ -37,20 +42,23 @@ namespace Capitulo01.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Nome,InstituicaoID")] Departamento departamento)
         {
-            Debug.WriteLine("Entrou na Action Create (POST)");
-            if (!departamento.InstituicaoID.HasValue ||  departamento.InstituicaoID == 0)
-                ModelState.AddModelError("InstituicaoID", "Selecione uma instituição válida.");
-
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(departamento);
-                await _context.SaveChangesAsync();
-                Debug.WriteLine("Dep criado com sucesso");
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    await departamentoDAL.GravarDepartamento(departamento);
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            catch (DbUpdateException)
+            {
+                ModelState.AddModelError("", "Não foi possível inserir os dados.");
             }
 
-            await PopularInstituicoesDropDown(departamento.InstituicaoID);
-            Debug.WriteLine("ModelState inválido");
+            var instituicoes = instituicaoDAL.ObterInstituicoesClassificadasPorNome().ToList();
+            instituicoes.Insert(0, new Instituicao { InstituicaoID = 0, Nome = "Selecione a instituição" });
+            ViewBag.Instituicoes = new SelectList(instituicoes, "InstituicaoID", "Nome", departamento.InstituicaoID);
+
             return View(departamento);
         }
 
@@ -58,10 +66,13 @@ namespace Capitulo01.Controllers
         {
             if (id == null) return NotFound();
 
-            var departamento = await _context.Departamentos.FindAsync(id);
+            var departamento = await departamentoDAL.ObterDepartamentoPorId((long)id);
             if (departamento == null) return NotFound();
 
-            await PopularInstituicoesDropDown(departamento.InstituicaoID);
+            var instituicoes = instituicaoDAL.ObterInstituicoesClassificadasPorNome().ToList();
+            instituicoes.Insert(0, new Instituicao { InstituicaoID = 0, Nome = "Selecione a instituição" });
+            ViewBag.Instituicoes = new SelectList(instituicoes, "InstituicaoID", "Nome", departamento.InstituicaoID);
+
             return View(departamento);
         }
 
@@ -76,65 +87,59 @@ namespace Capitulo01.Controllers
 
             if (!ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(departamento);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_context.Departamentos.Any(d => d.DepartamentoID == id)) return NotFound();
-                    else throw;
-                }
+                var instituicoes = instituicaoDAL.ObterInstituicoesClassificadasPorNome().ToList();
+                instituicoes.Insert(0, new Instituicao { InstituicaoID = 0, Nome = "Selecione a instituição" });
+                ViewBag.Instituicoes = new SelectList(instituicoes, "InstituicaoID", "Nome", departamento.InstituicaoID);
+
+                return View(departamento);
             }
 
-            await PopularInstituicoesDropDown(departamento.InstituicaoID);
-            return View(departamento);
+            try
+            {
+                await departamentoDAL.GravarDepartamento(departamento);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await DepartamentoExists(departamento.DepartamentoID))
+                    return NotFound();
+                else
+                    throw;
+            }
         }
 
         public async Task<IActionResult> Details(long? id)
         {
-            if (id == null) return NotFound();
-
-            var departamento = await _context.Departamentos
-                .Include(d => d.Instituicao)
-                .FirstOrDefaultAsync(d => d.DepartamentoID == id);
-
-            if (departamento == null) return NotFound();
-
-            return View(departamento);
+            return await ObterVisaoDepartamentoPorId(id);
         }
+
         public async Task<IActionResult> Delete(long? id)
         {
-            if (id == null) return NotFound();
-
-            var departamento = await _context.Departamentos
-                                             .Include(d => d.Instituicao)
-                                             .FirstOrDefaultAsync(d => d.DepartamentoID == id);
-
-            if (departamento == null) return NotFound();
-            return View(departamento);
+            return await ObterVisaoDepartamentoPorId(id);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(long id)
+        public async Task<IActionResult> DeleteConfirmed(long? id)
         {
-            var departamento = await _context.Departamentos.FindAsync(id);
-            if (departamento != null)
-            {
-                _context.Departamentos.Remove(departamento);
-                await _context.SaveChangesAsync();
-            }
+            var departamento = await departamentoDAL.EliminarDepartamentoPorId((long)id);
+            TempData["Message"] = "Departamento " + departamento.Nome.ToUpper() + " foi removido";
             return RedirectToAction(nameof(Index));
         }
 
-        private async Task PopularInstituicoesDropDown(object selectedId = null)
+        private async Task<IActionResult> ObterVisaoDepartamentoPorId(long? id)
         {
-            var instituicoes = await _context.Instituicoes.OrderBy(i => i.Nome).ToListAsync();
-            instituicoes.Insert(0, new Instituicao { InstituicaoID = 0, Nome = "Selecione a instituição" });
-            ViewBag.Instituicoes = new SelectList(instituicoes, "InstituicaoID", "Nome", selectedId);
+            if (id == null) return NotFound();
+
+            var departamento = await departamentoDAL.ObterDepartamentoPorId((long)id);
+            if (departamento == null) return NotFound();
+
+            return View(departamento);
+        }
+
+        private async Task<bool> DepartamentoExists(long? id)
+        {
+            return await departamentoDAL.ObterDepartamentoPorId((long)id) != null;
         }
     }
 }
