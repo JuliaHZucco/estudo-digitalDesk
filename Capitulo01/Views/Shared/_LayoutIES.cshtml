@@ -18,16 +18,18 @@
         <div class="row">
             <div class="col-3">
                 <nav class="nav flex-column bg-transparent" style="margin-left:40px;">
-                    <a class="nav-item nav-link" asp-controller="Instituicao" asp-action="Index">
+                    <a class="nav-item nav-link" asp-area="Cadastros" asp-controller="Instituicao" asp-action="Index">
                         <img src="~/images/university.png" width="30" height="30" alt="Universidade">
                         Instituições
                     </a>
-                    <a class="nav-item nav-link" asp-controller="Departamento" asp-action="Index">
+
+                    <a class="nav-item nav-link" asp-area="Cadastros" asp-controller="Departamento" asp-action="Index">
                         <img src="~/images/department.png" width="30" height="30" alt="Departamento">
                         Departamentos
                     </a>
-                    <a class="nav-item	nav-link" asp-controller="Academico" asp-action="Index">
-                        <img src="~/images/academico.png" width="30" height="30" alt="">
+
+                    <a class="nav-item nav-link" asp-area="Discente" asp-controller="Academico" asp-action="Index">
+                        <img src="~/images/academico.png" width="30" height="30" alt="Acadêmicos">
                         Acadêmicos
                     </a>
                 </nav>

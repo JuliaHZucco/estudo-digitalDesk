@@ -7,8 +7,9 @@ using Models.Discente;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace Capitulo01.Controllers
+namespace Capitulo01.Areas.Discente.Controllers
 {
+    [Area("Discente")]
     public class AcademicoController : Controller
     {
         private readonly IESContext _context;

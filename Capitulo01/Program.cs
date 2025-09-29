@@ -42,7 +42,11 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllerRoute(
+    name: "areaRoute",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Instituicao}/{action=Index}/{id?}");
+    pattern: "{area=Cadastros}/{controller=Instituicao}/{action=Index}/{id?}");
 
 app.Run();
