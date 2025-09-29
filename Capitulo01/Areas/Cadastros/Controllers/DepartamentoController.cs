@@ -1,18 +1,20 @@
 ﻿using Capitulo01.Data;
+using Capitulo01.Data.DAL.Cadastros;
 using Capitulo01.Modelo.Cadastros;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Capitulo01.Data.DAL.Cadastros;
 
 
 
 namespace Capitulo01.Areas.Cadastros.Controllers
 {
     [Area("Cadastros")]
+    [Authorize]
     public class DepartamentoController : Controller
     {
         private readonly IESContext _context;

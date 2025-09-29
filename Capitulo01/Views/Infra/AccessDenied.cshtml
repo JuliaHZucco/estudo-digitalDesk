@@ -1,0 +1,73 @@
+﻿@{
+    ViewData["Title"] = "Acesso Negado";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="alert alert-warning text-center" role="alert">
+            <h2 class="text-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                Acesso Negado
+            </h2>
+            <hr />
+            <p class="lead">
+                Você não tem permissão para acessar esta página ou recurso.
+            </p>
+            <p class="text-muted">
+                Isso pode acontecer quando:
+            </p>
+            <ul class="text-left text-muted">
+                <li>Você não possui as permissões necessárias</li>
+                <li>Sua conta não tem o nível de acesso requerido</li>
+                <li>A página requer autorização específica</li>
+            </ul>
+            <hr />
+            <div class="mt-4">
+                @if (User.Identity!.IsAuthenticated)
+                {
+                    <p class="mb-3">
+                        <strong>Usuário:</strong> @User.Identity.Name
+                    </p>
+                    <a class="btn btn-primary me-2" asp-area="Cadastros" asp-controller="Instituicao" asp-action="Index">
+                        <i class="fas fa-home"></i> Voltar ao Início
+                    </a>
+                    <form asp-action="Logout" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-secondary">
+                            <i class="fas fa-sign-out-alt"></i> Fazer Logout
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <p class="text-info mb-3">
+                        Você precisa estar logado para acessar este recurso.
+                    </p>
+                    <a class="btn btn-primary me-2" asp-action="Login">
+                        <i class="fas fa-sign-in-alt"></i> Fazer Login
+                    </a>
+                    <a class="btn btn-outline-primary" asp-action="Register">
+                        <i class="fas fa-user-plus"></i> Criar Conta
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Precisa de Ajuda?</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Se você acredita que deveria ter acesso a esta página, entre em contato com o administrador do sistema.
+                </p>
+                <small class="text-muted">
+                    <strong>Código de Erro:</strong> 403 - Forbidden
+                </small>
+            </div>
+        </div>
+    </div>
+</div>

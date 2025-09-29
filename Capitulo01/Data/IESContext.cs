@@ -1,11 +1,12 @@
-﻿
-using Capitulo01.Modelo.Cadastros;
+﻿using Capitulo01.Modelo.Cadastros;
+using Capitulo01.Models.Infra;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Modelo.Discente;
 
 namespace Capitulo01.Data
 {
-    public class IESContext : DbContext
+    public class IESContext : IdentityDbContext<UsuarioDaAplicacao>
     {
         public IESContext(DbContextOptions<IESContext> options) : base(options) { }
 
@@ -14,7 +15,7 @@ namespace Capitulo01.Data
         public DbSet<Curso> Cursos { get; set; }
         public DbSet<Disciplina> Disciplinas { get; set; }
         public DbSet<Academico> Academicos { get; set; }
- 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Departamento>()

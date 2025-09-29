@@ -1,11 +1,13 @@
 ﻿using Capitulo01.Data;
 using Capitulo01.Modelo.Cadastros;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace Capitulo01.Data.DAL.Cadastros
 {
+    [Authorize]
     public class InstituicaoDAL
     {
         private readonly IESContext _context;
