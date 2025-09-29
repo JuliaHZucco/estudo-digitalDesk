@@ -1,0 +1,44 @@
+﻿@model Models.Discente.Academico
+
+@{
+    ViewData["Title"] = "Detalhes do Acadêmico";
+    Layout = "_LayoutIES";
+}
+
+<div class="card-block">
+    <div class="card-header text-white bg-info text-center h1">
+        Detalhes do Acadêmico
+    </div>
+
+    <div class="card-body">
+        <div class="form-group">
+            <label asp-for="RegistroAcademico" class="control-label"></label>
+            <input asp-for="RegistroAcademico" class="form-control" disabled />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Nome" class="control-label"></label>
+            <input asp-for="Nome" class="form-control" disabled />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Nascimento" class="control-label"></label>
+            <input asp-for="Nascimento" class="form-control" disabled />
+        </div>
+
+        <div class="text-center h3 mt-4">
+            <a asp-action="Edit" asp-route-id="@Model.AcademicoID" class="btn btn-warning">Editar Acadêmico</a>
+            <a asp-action="Index" class="btn btn-info">Voltar à lista</a>
+        </div>
+    </div>
+
+    <div class="card-footer bg-dark text-center text-white">
+        Apenas visualize os dados do acadêmico acima
+    </div>
+</div>
+
+@section ScriptPage {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

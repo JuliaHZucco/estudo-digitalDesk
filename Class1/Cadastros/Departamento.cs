@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+
 namespace Capitulo01.Models.Cadastros;
     public class Departamento
     {
@@ -9,5 +10,6 @@ namespace Capitulo01.Models.Cadastros;
         [Required(ErrorMessage = "Selecione uma instituição.")]
         public long? InstituicaoID { get; set; }  
         public Instituicao? Instituicao { get; set; }
-    }
+        public virtual ICollection<Curso> Cursos { get; set; } = new List<Curso>();
+}
 

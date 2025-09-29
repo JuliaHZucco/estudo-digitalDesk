@@ -1,0 +1,52 @@
+﻿@model Models.Discente.Academico
+
+@{
+    ViewData["Title"] = "Excluir Acadêmico";
+    Layout = "_LayoutIES";
+}
+
+<div class="card-block">
+    <div class="card-header text-white bg-danger text-center h1">
+        Excluir Acadêmico
+    </div>
+
+    <div class="card-body">
+        <h3 class="text-center text-danger mb-4">Tem certeza que deseja excluir este acadêmico?</h3>
+
+        <form asp-action="Delete" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="RegistroAcademico" class="control-label"></label>
+                <input asp-for="RegistroAcademico" class="form-control" disabled />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Nome" class="control-label"></label>
+                <input asp-for="Nome" class="form-control" disabled />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Nascimento" class="control-label"></label>
+                <input asp-for="Nascimento" class="form-control" disabled />
+            </div>
+
+            <input type="hidden" asp-for="AcademicoID" />
+
+            <div class="form-group text-center h3">
+                <input type="submit" value="Excluir Acadêmico" class="btn btn-danger" />
+                <a asp-action="Index" class="btn btn-info">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="card-footer bg-dark text-center text-white">
+        Confirme a exclusão ou clique em cancelar
+    </div>
+</div>
+
+@section ScriptPage {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
