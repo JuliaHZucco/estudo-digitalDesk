@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-namespace Capitulo01.Models.Cadastros;
+namespace Capitulo01.Modelo.Cadastros;
 
 public class Instituicao
 {

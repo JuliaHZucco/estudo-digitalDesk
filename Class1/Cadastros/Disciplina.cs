@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Capitulo01.Models.Cadastros
+namespace Capitulo01.Modelo.Cadastros
 {
     public class Disciplina
     {

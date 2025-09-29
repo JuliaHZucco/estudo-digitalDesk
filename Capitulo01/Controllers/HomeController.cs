@@ -1,6 +1,7 @@
 using System.Diagnostics;
-using Capitulo01.Models.Cadastros;
+using Capitulo01.Modelo.Cadastros;
 using Microsoft.AspNetCore.Mvc;
+using Capitulo01.Models;
 
 namespace Capitulo01.Controllers
 {

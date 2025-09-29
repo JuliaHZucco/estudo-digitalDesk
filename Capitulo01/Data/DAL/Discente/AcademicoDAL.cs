@@ -1,4 +1,4 @@
-﻿using Models.Discente;
+﻿using Modelo.Discente;
 using System.Linq;
 using System.Threading.Tasks;
 

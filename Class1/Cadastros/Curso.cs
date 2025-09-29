@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace Capitulo01.Models.Cadastros
+namespace Capitulo01.Modelo.Cadastros
 {
     public class Curso
     {

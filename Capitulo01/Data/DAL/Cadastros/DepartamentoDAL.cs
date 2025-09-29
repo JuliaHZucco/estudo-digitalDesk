@@ -1,5 +1,5 @@
 ﻿using Capitulo01.Data;
-using Capitulo01.Models.Cadastros;
+using Capitulo01.Modelo.Cadastros;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;

@@ -1,4 +1,4 @@
-namespace Capitulo01.Models.Cadastros;
+namespace Capitulo01.Models;
 
 public class ErrorViewModel
 {

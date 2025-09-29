@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 
 
-namespace Models.Discente
+namespace Modelo.Discente
 {
     public class Academico
     {

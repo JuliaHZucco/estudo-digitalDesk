@@ -3,7 +3,7 @@ using Capitulo01.Data.DAL.Discente;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Models.Discente;
+using Modelo.Discente;
 using System.Diagnostics;
 using System.Threading.Tasks;
 

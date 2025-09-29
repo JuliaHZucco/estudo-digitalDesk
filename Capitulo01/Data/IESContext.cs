@@ -1,7 +1,7 @@
-﻿using Models.Discente;
-using Capitulo01.Models.Cadastros;
+﻿
+using Capitulo01.Modelo.Cadastros;
 using Microsoft.EntityFrameworkCore;
-using Models.Discente;
+using Modelo.Discente;
 
 namespace Capitulo01.Data
 {
