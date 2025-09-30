@@ -1,0 +1,24 @@
+﻿.error-page {
+    padding: 2rem;
+}
+
+.error-code h1 {
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.error-actions .btn {
+    min-width: 150px;
+    margin: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .error-code h1 {
+        font-size: 4rem;
+    }
+
+    .error-actions .btn {
+        display: block;
+        width: 100%;
+        margin: 0.5rem 0;
+    }
+}

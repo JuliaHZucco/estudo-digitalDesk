@@ -1,0 +1,39 @@
+﻿@{
+    Layout = "_LayoutIES";
+    ViewData["Title"] = "Página não encontrada";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/error-pages.css" />
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center align-items-center" style="min-height: 60vh;">
+        <div class="col-md-8 text-center">
+            <div class="error-page">
+                <div class="error-code text-primary mb-4">
+                    <h1 style="font-size: 8rem; font-weight: bold;">404</h1>
+                </div>
+
+                <div class="error-content">
+                    <h2 class="text-dark mb-3">Página não encontrada</h2>
+                    <p class="lead text-muted mb-4">
+                        Ops! A página que você está procurando não foi encontrada.
+                    </p>
+                    <p class="text-muted mb-4">
+                        A página pode ter sido removida, teve seu nome alterado ou está temporariamente indisponível.
+                    </p>
+
+                    <div class="error-actions">
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-primary btn-lg me-3">
+                            <i class="fas fa-home"></i> Voltar ao Início
+                        </a>
+                        <button onclick="history.back()" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-arrow-left"></i> Voltar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
