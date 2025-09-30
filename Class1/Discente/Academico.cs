@@ -33,14 +33,14 @@ namespace Modelo.Discente
         public DateTime Nascimento { get; set; }
 
         [DisplayName("Tipo da Foto")]
-        public string FotoMimeType { get; set; }
+        public string? FotoMimeType { get; set; }
 
         [DisplayName("Foto")]
-        public byte[] Foto { get; set; }
+        public byte[]? Foto { get; set; }
 
         [NotMapped]
         [DisplayName("Selecionar Foto")]
-        public IFormFile formFile { get; set; }
+        public IFormFile? formFile { get; set; }
     }
 
 }

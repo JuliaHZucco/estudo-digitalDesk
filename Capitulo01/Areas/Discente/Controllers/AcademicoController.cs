@@ -2,12 +2,13 @@
 using Capitulo01.Data.DAL.Discente;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Modelo.Discente;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.FileProviders;
 
 namespace Capitulo01.Areas.Discente.Controllers
 {
@@ -17,10 +18,12 @@ namespace Capitulo01.Areas.Discente.Controllers
     {
         private readonly IESContext _context;
         private readonly AcademicoDAL academicoDAL;
+        private readonly IWebHostEnvironment _env;
 
-        public AcademicoController(IESContext context)
+        public AcademicoController(IESContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
             academicoDAL = new AcademicoDAL(context);
         }
 
@@ -102,7 +105,7 @@ namespace Capitulo01.Areas.Discente.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long? id, [Bind("AcademicoID,Nome,RegistroAcademico,Nascimento")] Academico academico, IFormFile foto)
+        public async Task<IActionResult> Edit(long? id, [Bind("AcademicoID,Nome,RegistroAcademico,Nascimento")] Academico academico, IFormFile foto, string chkRemoverFoto)
         {
             if (id != academico.AcademicoID)
             {
@@ -112,12 +115,12 @@ namespace Capitulo01.Areas.Discente.Controllers
             ModelState.Remove("FotoMimeType");
             ModelState.Remove("Foto");
             ModelState.Remove("formFile");
+            ModelState.Remove("chkRemoverFoto"); 
 
             if (ModelState.IsValid)
             {
                 try
                 {
-  
                     var academicoExistente = await academicoDAL.ObterAcademicoPorId(academico.AcademicoID.Value);
                     if (academicoExistente == null)
                     {
@@ -128,7 +131,12 @@ namespace Capitulo01.Areas.Discente.Controllers
                     academicoExistente.RegistroAcademico = academico.RegistroAcademico;
                     academicoExistente.Nascimento = academico.Nascimento;
 
-                    if (foto != null && foto.Length > 0)
+                    if (!string.IsNullOrEmpty(chkRemoverFoto) && chkRemoverFoto == "Sim")
+                    {
+                        academicoExistente.Foto = null;
+                        academicoExistente.FotoMimeType = null;
+                    }
+                    else if (foto != null && foto.Length > 0)
                     {
                         using (var stream = new MemoryStream())
                         {
@@ -181,11 +189,35 @@ namespace Capitulo01.Areas.Discente.Controllers
         public async Task<FileContentResult> GetFoto(long id)
         {
             Academico academico = await academicoDAL.ObterAcademicoPorId(id);
-            if (academico != null && academico.Foto != null)
+            if (academico != null && academico.Foto != null && academico.Foto.Length > 0)
             {
                 return File(academico.Foto, academico.FotoMimeType);
             }
             return null;
+        }
+
+        public async Task<IActionResult> DownloadFoto(long id) 
+        {
+            Academico academico = await academicoDAL.ObterAcademicoPorId(id);
+
+            if (academico == null || academico.Foto == null || academico.Foto.Length == 0)
+            {
+                return NotFound();
+            }
+
+            string nomeArquivo = "Foto" + academico.AcademicoID.ToString().Trim() + ".jpg";
+            string caminhoCompleto = System.IO.Path.Combine(_env.WebRootPath, nomeArquivo);
+
+            using (FileStream fileStream = new FileStream(caminhoCompleto, FileMode.Create, FileAccess.Write))
+            {
+                fileStream.Write(academico.Foto, 0, academico.Foto.Length);
+            }
+
+            IFileProvider provider = new PhysicalFileProvider(_env.WebRootPath);
+            IFileInfo fileInfo = provider.GetFileInfo(nomeArquivo);
+            var readStream = fileInfo.CreateReadStream();
+
+            return File(readStream, academico.FotoMimeType, nomeArquivo);
         }
     }
 }
