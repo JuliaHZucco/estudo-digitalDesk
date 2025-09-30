@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Modelo.Discente;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Capitulo01.Areas.Discente.Controllers
 {
@@ -62,19 +63,38 @@ namespace Capitulo01.Areas.Discente.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Nome,RegistroAcademico,Nascimento")] Academico academico)
+        public async Task<IActionResult> Create([Bind("Nome,RegistroAcademico,Nascimento")] Academico academico, IFormFile foto)
         {
             try
             {
+
+                ModelState.Remove("FotoMimeType");
+                ModelState.Remove("Foto");
+                ModelState.Remove("formFile");
+
                 if (ModelState.IsValid)
                 {
+                    if (foto != null && foto.Length > 0)
+                    {
+                        using (var stream = new MemoryStream())
+                        {
+                            await foto.CopyToAsync(stream);
+                            academico.Foto = stream.ToArray();
+                            academico.FotoMimeType = foto.ContentType;
+                        }
+                    }
+
                     await academicoDAL.GravarAcademico(academico);
                     return RedirectToAction(nameof(Index));
                 }
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException ex)
             {
-                ModelState.AddModelError("", "Não foi possível inserir os dados.");
+                ModelState.AddModelError("", "Não foi possível inserir os dados. Erro: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Erro inesperado: " + ex.Message);
             }
 
             return View(academico);
@@ -82,18 +102,44 @@ namespace Capitulo01.Areas.Discente.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long? id, [Bind("AcademicoID,Nome,RegistroAcademico,Nascimento")] Academico academico)
+        public async Task<IActionResult> Edit(long? id, [Bind("AcademicoID,Nome,RegistroAcademico,Nascimento")] Academico academico, IFormFile foto)
         {
             if (id != academico.AcademicoID)
             {
                 return NotFound();
             }
 
+            ModelState.Remove("FotoMimeType");
+            ModelState.Remove("Foto");
+            ModelState.Remove("formFile");
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    await academicoDAL.GravarAcademico(academico);
+  
+                    var academicoExistente = await academicoDAL.ObterAcademicoPorId(academico.AcademicoID.Value);
+                    if (academicoExistente == null)
+                    {
+                        return NotFound();
+                    }
+
+                    academicoExistente.Nome = academico.Nome;
+                    academicoExistente.RegistroAcademico = academico.RegistroAcademico;
+                    academicoExistente.Nascimento = academico.Nascimento;
+
+                    if (foto != null && foto.Length > 0)
+                    {
+                        using (var stream = new MemoryStream())
+                        {
+                            await foto.CopyToAsync(stream);
+                            academicoExistente.Foto = stream.ToArray();
+                            academicoExistente.FotoMimeType = foto.ContentType;
+                        }
+                    }
+
+                    await academicoDAL.GravarAcademico(academicoExistente);
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -106,8 +152,10 @@ namespace Capitulo01.Areas.Discente.Controllers
                         throw;
                     }
                 }
-
-                return RedirectToAction(nameof(Index));
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"Erro ao salvar: {ex.Message}");
+                }
             }
 
             return View(academico);
@@ -128,6 +176,16 @@ namespace Capitulo01.Areas.Discente.Controllers
         private async Task<bool> AcademicoExists(long? id)
         {
             return await academicoDAL.ObterAcademicoPorId((long)id) != null;
+        }
+
+        public async Task<FileContentResult> GetFoto(long id)
+        {
+            Academico academico = await academicoDAL.ObterAcademicoPorId(id);
+            if (academico != null && academico.Foto != null)
+            {
+                return File(academico.Foto, academico.FotoMimeType);
+            }
+            return null;
         }
     }
 }

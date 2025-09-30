@@ -13,7 +13,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-primary fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand text-white" asp-controller="Home" asp-action="Index">Sistema IES</a>
+            <a class="navbar-brand text-white" asp-controller="Home" asp-action="Index" asp-area="">Sistema IES</a>
 
             <div class="navbar-nav ms-auto">
                 @if (User.Identity!.IsAuthenticated)

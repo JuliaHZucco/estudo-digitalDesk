@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel;
+using Microsoft.AspNetCore.Http;
 
 
 namespace Modelo.Discente
@@ -29,6 +31,16 @@ namespace Modelo.Discente
         [DataType(DataType.Date)]
         [DisplayName("Nascimento")]
         public DateTime Nascimento { get; set; }
+
+        [DisplayName("Tipo da Foto")]
+        public string FotoMimeType { get; set; }
+
+        [DisplayName("Foto")]
+        public byte[] Foto { get; set; }
+
+        [NotMapped]
+        [DisplayName("Selecionar Foto")]
+        public IFormFile formFile { get; set; }
     }
 
 }
