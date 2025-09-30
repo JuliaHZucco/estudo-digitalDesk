@@ -115,7 +115,7 @@ namespace Capitulo01.Areas.Discente.Controllers
             ModelState.Remove("FotoMimeType");
             ModelState.Remove("Foto");
             ModelState.Remove("formFile");
-            ModelState.Remove("chkRemoverFoto"); 
+            ModelState.Remove("chkRemoverFoto");
 
             if (ModelState.IsValid)
             {
@@ -196,7 +196,7 @@ namespace Capitulo01.Areas.Discente.Controllers
             return null;
         }
 
-        public async Task<IActionResult> DownloadFoto(long id) 
+        public async Task<IActionResult> DownloadFoto(long id)
         {
             Academico academico = await academicoDAL.ObterAcademicoPorId(id);
 

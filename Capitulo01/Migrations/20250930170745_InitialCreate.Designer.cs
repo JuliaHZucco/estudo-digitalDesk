@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Capitulo01.Migrations
 {
     [DbContext(typeof(IESContext))]
-    [Migration("20250930025351_FotoAcademico")]
-    partial class FotoAcademico
+    [Migration("20250930170745_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,36 +27,34 @@ namespace Capitulo01.Migrations
 
             modelBuilder.Entity("Capitulo01.Modelo.Cadastros.Curso", b =>
                 {
-                    b.Property<int>("CursoID")
+                    b.Property<long>("CursoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CursoID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("CursoID"));
 
-                    b.Property<int>("DepartamentoID")
-                        .HasColumnType("int");
-
-                    b.Property<long?>("DepartamentoID1")
+                    b.Property<long>("DepartamentoID")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Nome")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("CursoID");
 
-                    b.HasIndex("DepartamentoID1");
+                    b.HasIndex("DepartamentoID");
 
                     b.ToTable("Cursos");
                 });
 
             modelBuilder.Entity("Capitulo01.Modelo.Cadastros.CursoDisciplina", b =>
                 {
-                    b.Property<int>("CursoID")
-                        .HasColumnType("int");
+                    b.Property<long>("CursoID")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("DisciplinaID")
-                        .HasColumnType("int");
+                    b.Property<long>("DisciplinaID")
+                        .HasColumnType("bigint");
 
                     b.HasKey("CursoID", "DisciplinaID");
 
@@ -90,25 +88,23 @@ namespace Capitulo01.Migrations
 
             modelBuilder.Entity("Capitulo01.Modelo.Cadastros.Disciplina", b =>
                 {
-                    b.Property<int>("DisciplinaID")
+                    b.Property<long>("DisciplinaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DisciplinaID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("DisciplinaID"));
 
-                    b.Property<int>("DepartamentoID")
-                        .HasColumnType("int");
-
-                    b.Property<long?>("DepartamentoID1")
+                    b.Property<long>("DepartamentoID")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Nome")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("DisciplinaID");
 
-                    b.HasIndex("DepartamentoID1");
+                    b.HasIndex("DepartamentoID");
 
                     b.ToTable("Disciplinas");
                 });
@@ -349,11 +345,9 @@ namespace Capitulo01.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("AcademicoID"));
 
                     b.Property<byte[]>("Foto")
-                        .IsRequired()
                         .HasColumnType("varbinary(max)");
 
                     b.Property<string>("FotoMimeType")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Nascimento")
@@ -374,11 +368,46 @@ namespace Capitulo01.Migrations
                     b.ToTable("Academicos");
                 });
 
+            modelBuilder.Entity("Modelo.Docente.CursoProfessor", b =>
+                {
+                    b.Property<long>("CursoID")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ProfessorID")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("CursoID", "ProfessorID");
+
+                    b.HasIndex("ProfessorID");
+
+                    b.ToTable("CursosProfessores");
+                });
+
+            modelBuilder.Entity("Modelo.Docente.Professor", b =>
+                {
+                    b.Property<long>("ProfessorID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ProfessorID"));
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("ProfessorID");
+
+                    b.ToTable("Professores");
+                });
+
             modelBuilder.Entity("Capitulo01.Modelo.Cadastros.Curso", b =>
                 {
                     b.HasOne("Capitulo01.Modelo.Cadastros.Departamento", "Departamento")
                         .WithMany("Cursos")
-                        .HasForeignKey("DepartamentoID1");
+                        .HasForeignKey("DepartamentoID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Departamento");
                 });
@@ -417,7 +446,9 @@ namespace Capitulo01.Migrations
                 {
                     b.HasOne("Capitulo01.Modelo.Cadastros.Departamento", "Departamento")
                         .WithMany()
-                        .HasForeignKey("DepartamentoID1");
+                        .HasForeignKey("DepartamentoID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Departamento");
                 });
@@ -473,9 +504,30 @@ namespace Capitulo01.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Modelo.Docente.CursoProfessor", b =>
+                {
+                    b.HasOne("Capitulo01.Modelo.Cadastros.Curso", "Curso")
+                        .WithMany("CursosProfessores")
+                        .HasForeignKey("CursoID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Modelo.Docente.Professor", "Professor")
+                        .WithMany("CursosProfessores")
+                        .HasForeignKey("ProfessorID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Curso");
+
+                    b.Navigation("Professor");
+                });
+
             modelBuilder.Entity("Capitulo01.Modelo.Cadastros.Curso", b =>
                 {
                     b.Navigation("CursosDisciplinas");
+
+                    b.Navigation("CursosProfessores");
                 });
 
             modelBuilder.Entity("Capitulo01.Modelo.Cadastros.Departamento", b =>
@@ -491,6 +543,11 @@ namespace Capitulo01.Migrations
             modelBuilder.Entity("Capitulo01.Modelo.Cadastros.Instituicao", b =>
                 {
                     b.Navigation("Departamentos");
+                });
+
+            modelBuilder.Entity("Modelo.Docente.Professor", b =>
+                {
+                    b.Navigation("CursosProfessores");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,0 +1,70 @@
+﻿@model Capitulo01.Modelo.Cadastros.Curso
+
+@{
+    ViewData["Title"] = "Detalhes do Curso";
+    Layout = "_LayoutIES";
+}
+
+<div class="card-block">
+    <div class="card-header text-white bg-info text-center h1">
+        Detalhes do Curso
+    </div>
+
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.CursoID)
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.CursoID)
+            </dd>
+
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.Nome)
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.Nome)
+            </dd>
+
+            <dt class="col-sm-3">
+                Departamento
+            </dt>
+            <dd class="col-sm-9">
+                @if (Model.Departamento != null)
+                {
+                    @Html.DisplayFor(model => model.Departamento.Nome)
+                }
+                else
+                {
+                    <span class="text-muted">Departamento não informado</span>
+                }
+            </dd>
+
+            <dt class="col-sm-3">
+                Instituição
+            </dt>
+            <dd class="col-sm-9">
+                @if (Model.Departamento?.Instituicao != null)
+                {
+                    @Html.DisplayFor(model => model.Departamento.Instituicao.Nome)
+                }
+                else
+                {
+                    <span class="text-muted">Instituição não informada</span>
+                }
+            </dd>
+
+            <dt class="col-sm-3">
+                ID do Departamento
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.DepartamentoID)
+            </dd>
+        </dl>
+    </div>
+
+    <div class="card-footer bg-dark text-center">
+        <a asp-action="Edit" asp-route-id="@Model.CursoID" class="btn btn-warning">Editar</a>
+        <a asp-action="Index" class="btn btn-info">Retornar à listagem</a>
+    </div>
+</div>

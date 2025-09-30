@@ -1,0 +1,162 @@
+﻿@model Modelo.Docente.AdicionarProfessorViewModel
+
+@{
+    ViewData["Title"] = "Adicionar Professor ao Curso";
+    Layout = "_LayoutIES";
+}
+
+@if (ViewBag.Mensagem != null)
+{
+    <div class="alert alert-success" role="alert">
+        @ViewBag.Mensagem
+    </div>
+}
+
+<div class="card-block">
+    <div class="card-header text-white bg-warning text-center h1">
+        Adicionar Professor ao Curso
+    </div>
+
+    <div class="card-body">
+        <form asp-action="AdicionarProfessor" method="post">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <div class="form-group mb-3">
+                <label class="control-label">Instituição:</label>
+                @Html.DropDownListFor(m => m.InstituicaoID, new SelectList(ViewBag.Instituicoes, "InstituicaoID", "Nome"), new { @class = "form-control", @id = "ddlInstituicao" })
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="control-label">Departamento:</label>
+                @Html.DropDownListFor(m => m.DepartamentoID, new SelectList(ViewBag.Departamentos, "DepartamentoID", "Nome"), new { @class = "form-control", @id = "ddlDepartamento" })
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="control-label">Curso:</label>
+                @Html.DropDownListFor(m => m.CursoID, new SelectList(ViewBag.Cursos, "CursoID", "Nome"), new { @class = "form-control", @id = "ddlCurso" })
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="control-label">Professor:</label>
+                @Html.DropDownListFor(m => m.ProfessorID, new SelectList(ViewBag.Professores, "ProfessorID", "Nome"), new { @class = "form-control", @id = "ddlProfessor" })
+            </div>
+
+            <div class="form-group text-center h3">
+                <input type="submit" value="Adicionar Professor ao Curso" class="btn btn-light" />
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="btn btn-info">Retornar ao Menu Principal</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="card-footer bg-dark text-center text-white">
+        Selecione a instituição, departamento, curso e professor para realizar a associação
+    </div>
+</div>
+
+@section ScriptPage {
+    <script>
+        $(document).ready(function () {
+            console.log("Script carregado");
+
+            $("#ddlInstituicao").change(function () {
+                var instituicaoID = $(this).val();
+                console.log("Instituição selecionada:", instituicaoID);
+                $("#ddlDepartamento").empty().append('<option value="0">Selecione o departamento</option>');
+                $("#ddlCurso").empty().append('<option value="0">Selecione o curso</option>');
+                $("#ddlProfessor").empty().append('<option value="0">Selecione o professor</option>');
+
+                if (instituicaoID && instituicaoID != 0) {
+                    console.log("Fazendo chamada AJAX para departamentos");
+
+                    $.ajax({
+                        url: '@Url.Action("ObterDepartamentosPorInstituicao", "Professor", new { area = "Docente" })',
+                        type: 'GET',
+                        data: { actionID: instituicaoID },
+                        success: function (data) {
+                            console.log("Dados recebidos:", data);
+                            if (data.error) {
+                                console.error("Erro:", data.error);
+                                alert("Erro ao carregar departamentos: " + data.error);
+                            } else {
+                                $.each(data, function (index, item) {
+                                    $("#ddlDepartamento").append('<option value="' + item.Value + '">' + item.Text + '</option>');
+                                });
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Erro na chamada AJAX:", error);
+                            console.error("Status:", status);
+                            console.error("Response:", xhr.responseText);
+                            alert("Erro ao carregar departamentos. Verifique o console para mais detalhes.");
+                        }
+                    });
+                }
+            });
+
+            $("#ddlDepartamento").change(function () {
+                var departamentoID = $(this).val();
+                console.log("Departamento selecionado:", departamentoID);
+                $("#ddlCurso").empty().append('<option value="0">Selecione o curso</option>');
+                $("#ddlProfessor").empty().append('<option value="0">Selecione o professor</option>');
+
+                if (departamentoID && departamentoID != 0) {
+                    console.log("Fazendo chamada AJAX para cursos");
+
+                    $.ajax({
+                        url: '@Url.Action("ObterCursosPorDepartamento", "Professor", new { area = "Docente" })',
+                        type: 'GET',
+                        data: { actionID: departamentoID },
+                        success: function (data) {
+                            console.log("Cursos recebidos:", data);
+                            if (data.error) {
+                                console.error("Erro:", data.error);
+                                alert("Erro ao carregar cursos: " + data.error);
+                            } else {
+                                $.each(data, function (index, item) {
+                                    $("#ddlCurso").append('<option value="' + item.Value + '">' + item.Text + '</option>');
+                                });
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Erro na chamada AJAX:", error);
+                            alert("Erro ao carregar cursos. Verifique o console para mais detalhes.");
+                        }
+                    });
+                }
+            });
+
+            $("#ddlCurso").change(function () {
+                var cursoID = $(this).val();
+                console.log("Curso selecionado:", cursoID);
+                $("#ddlProfessor").empty().append('<option value="0">Selecione o professor</option>');
+
+                if (cursoID && cursoID != 0) {
+                    console.log("Fazendo chamada AJAX para professores");
+
+                    $.ajax({
+                        url: '@Url.Action("ObterProfessoresForaDoCurso", "Professor", new { area = "Docente" })',
+                        type: 'GET',
+                        data: { actionID: cursoID },
+                        success: function (data) {
+                            console.log("Professores recebidos:", data);
+                            if (data.error) {
+                                console.error("Erro:", data.error);
+                                alert("Erro ao carregar professores: " + data.error);
+                            } else {
+                                $.each(data, function (index, item) {
+                                    $("#ddlProfessor").append('<option value="' + item.Value + '">' + item.Text + '</option>');
+                                });
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Erro na chamada AJAX:", error);
+                            alert("Erro ao carregar professores. Verifique o console para mais detalhes.");
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

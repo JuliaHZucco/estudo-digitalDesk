@@ -85,7 +85,7 @@ namespace Capitulo01.Areas.Cadastros.Controllers
         {
             if (id != departamento.DepartamentoID) return NotFound();
 
-            if (!departamento.InstituicaoID.HasValue || departamento.InstituicaoID == 0)
+            if (departamento.InstituicaoID == 0)
                 ModelState.AddModelError("InstituicaoID", "Selecione uma instituição válida.");
 
             if (!ModelState.IsValid)
@@ -140,9 +140,9 @@ namespace Capitulo01.Areas.Cadastros.Controllers
             return View(departamento);
         }
 
-        private async Task<bool> DepartamentoExists(long? id)
+        private async Task<bool> DepartamentoExists(long id)
         {
-            return await departamentoDAL.ObterDepartamentoPorId((long)id) != null;
+            return await departamentoDAL.ObterDepartamentoPorId(id) != null;
         }
     }
 }

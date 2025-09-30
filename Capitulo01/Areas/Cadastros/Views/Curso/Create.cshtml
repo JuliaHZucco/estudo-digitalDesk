@@ -1,0 +1,80 @@
+﻿@model Capitulo01.Modelo.Cadastros.Curso
+
+@{
+    ViewData["Title"] = "Criar Curso";
+    Layout = "_LayoutIES";
+}
+
+<div class="card-block">
+    <div class="card-header text-white bg-info text-center h1">
+        Registrando um novo curso
+    </div>
+
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Nome" class="control-label"></label>
+                <input asp-for="Nome" class="form-control" required />
+                <span asp-validation-for="Nome" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="DepartamentoID" class="control-label">Departamento</label>
+                <select asp-for="DepartamentoID" class="form-control" asp-items="ViewBag.Departamentos" required>
+                    <option value="">Selecione um departamento</option>
+                </select>
+                <span asp-validation-for="DepartamentoID" class="text-danger"></span>
+            </div>
+
+            <div class="form-group text-center h3">
+                <input type="submit" value="Registrar Curso" class="btn btn-light" onclick="console.log('Botão clicado!')" />
+                <a asp-action="Index" class="btn btn-info">Retornar à listagem de cursos</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="card-footer bg-dark text-center text-white">
+        Informe os dados acima e/ou clique em um dos botões de ação
+    </div>
+</div>
+
+@section ScriptPage {
+    <script>
+        $(document).ready(function() {
+            console.log("View Create carregada");
+
+
+            $('form').on('submit', function(e) {
+                console.log("Form enviado!");
+                console.log("Nome:", $('#Nome').val());
+                console.log("DepartamentoID:", $('#DepartamentoID').val());
+
+
+                var nome = $('#Nome').val().trim();
+                var departamentoId = $('#DepartamentoID').val();
+
+                if (!nome) {
+                    alert('Por favor, informe o nome do curso.');
+                    e.preventDefault();
+                    return false;
+                }
+
+                if (!departamentoId || departamentoId == '') {
+                    alert('Por favor, selecione um departamento.');
+                    e.preventDefault();
+                    return false;
+                }
+
+                console.log("Validação passou, enviando form...");
+            });
+        });
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -8,10 +8,10 @@ namespace Capitulo01.Modelo.Cadastros
 {
     public class CursoDisciplina
     {
-        public int CursoID { get; set; }
+        public long CursoID { get; set; }
         public Curso Curso { get; set; } = null!;
 
-        public int DisciplinaID { get; set; }
+        public long DisciplinaID { get; set; }
         public Disciplina Disciplina { get; set; } = null!;
     }
 }

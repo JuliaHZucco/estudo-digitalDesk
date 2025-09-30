@@ -1,5 +1,4 @@
-﻿<!D
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -51,9 +50,19 @@
                             Departamentos
                         </a>
 
+                        <a class="nav-item nav-link" asp-area="Cadastros" asp-controller="Curso" asp-action="Index">
+                            <img src="~/images/curso.png" width="30" height="30" alt="Cursos">
+                            Cursos
+                        </a>
+
                         <a class="nav-item nav-link" asp-area="Discente" asp-controller="Academico" asp-action="Index">
                             <img src="~/images/academico.png" width="30" height="30" alt="Acadêmicos">
                             Acadêmicos
+                        </a>
+
+                        <a class="nav-item nav-link" asp-area="Docente" asp-controller="Professor" asp-action="Index">
+                            <img src="~/images/professor.png" width="30" height="30" alt="Professores">
+                            Professores
                         </a>
                     </nav>
                 </div>
@@ -74,23 +83,9 @@
         <a class="navbar-brand" href="#">Projeto Júlia Zucco</a>
     </nav>
 
-    <environment include="Development">
-        <script src="~/lib/jquery/jquery.min.js"></script>
-        <script src="~/lib/popper.js/umd/popper.min.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
-    </environment>
-
-    <environment exclude="Development">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
-                asp-fallback-src="~/lib/jquery/jquery.min.js"
-                asp-fallback-test="window.jQuery"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"
-                asp-fallback-src="~/lib/popper.js/umd/popper.min.js"
-                asp-fallback-test="window.Popper"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js"
-                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
-                asp-fallback-test="window.bootstrap"></script>
-    </environment>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/popper.js/umd/popper.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
 
     @RenderSection("Scripts", required: false)
     @RenderSection("ScriptPage", required: false)

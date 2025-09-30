@@ -1,0 +1,50 @@
+﻿@model IEnumerable<Modelo.Docente.Professor>
+
+@{
+    ViewData["Title"] = "Professores";
+    Layout = "_LayoutIES";
+}
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["Message"]
+    </div>
+}
+
+<div class="card-block">
+    <div class="card-header text-white bg-warning text-center h1">
+        Professores Registrados
+    </div>
+
+    <div class="card-body">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.ProfessorID)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Nome)</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.ProfessorID">Edit</a> |
+                            <a asp-action="Details" asp-route-id="@item.ProfessorID">Details</a> |
+                            <a asp-action="Delete" asp-route-id="@item.ProfessorID">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card-footer bg-success text-center">
+        <a asp-action="Create" class="btn btn-success">Cadastrar Novo Professor</a>
+        <a asp-action="AdicionarProfessor" class="btn btn-primary">Adicionar Professor ao Curso</a>
+    </div>
+</div>

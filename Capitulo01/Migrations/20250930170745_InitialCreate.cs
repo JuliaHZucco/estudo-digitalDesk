@@ -6,19 +6,27 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Capitulo01.Migrations
 {
     /// <inheritdoc />
-    public partial class AddIdentity : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<string>(
-                name: "Nome",
-                table: "Academicos",
-                type: "nvarchar(100)",
-                maxLength: 100,
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)");
+            migrationBuilder.CreateTable(
+                name: "Academicos",
+                columns: table => new
+                {
+                    AcademicoID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RegistroAcademico = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    Nome = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Nascimento = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FotoMimeType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Foto = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Academicos", x => x.AcademicoID);
+                });
 
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
@@ -59,6 +67,33 @@ namespace Capitulo01.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Instituicoes",
+                columns: table => new
+                {
+                    InstituicaoID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Endereco = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Instituicoes", x => x.InstituicaoID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Professores",
+                columns: table => new
+                {
+                    ProfessorID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Professores", x => x.ProfessorID);
                 });
 
             migrationBuilder.CreateTable(
@@ -167,6 +202,114 @@ namespace Capitulo01.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Departamentos",
+                columns: table => new
+                {
+                    DepartamentoID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    InstituicaoID = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Departamentos", x => x.DepartamentoID);
+                    table.ForeignKey(
+                        name: "FK_Departamentos_Instituicoes_InstituicaoID",
+                        column: x => x.InstituicaoID,
+                        principalTable: "Instituicoes",
+                        principalColumn: "InstituicaoID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Cursos",
+                columns: table => new
+                {
+                    CursoID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    DepartamentoID = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cursos", x => x.CursoID);
+                    table.ForeignKey(
+                        name: "FK_Cursos_Departamentos_DepartamentoID",
+                        column: x => x.DepartamentoID,
+                        principalTable: "Departamentos",
+                        principalColumn: "DepartamentoID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Disciplinas",
+                columns: table => new
+                {
+                    DisciplinaID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    DepartamentoID = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Disciplinas", x => x.DisciplinaID);
+                    table.ForeignKey(
+                        name: "FK_Disciplinas_Departamentos_DepartamentoID",
+                        column: x => x.DepartamentoID,
+                        principalTable: "Departamentos",
+                        principalColumn: "DepartamentoID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CursosProfessores",
+                columns: table => new
+                {
+                    CursoID = table.Column<long>(type: "bigint", nullable: false),
+                    ProfessorID = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CursosProfessores", x => new { x.CursoID, x.ProfessorID });
+                    table.ForeignKey(
+                        name: "FK_CursosProfessores_Cursos_CursoID",
+                        column: x => x.CursoID,
+                        principalTable: "Cursos",
+                        principalColumn: "CursoID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CursosProfessores_Professores_ProfessorID",
+                        column: x => x.ProfessorID,
+                        principalTable: "Professores",
+                        principalColumn: "ProfessorID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CursoDisciplina",
+                columns: table => new
+                {
+                    CursoID = table.Column<long>(type: "bigint", nullable: false),
+                    DisciplinaID = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CursoDisciplina", x => new { x.CursoID, x.DisciplinaID });
+                    table.ForeignKey(
+                        name: "FK_CursoDisciplina_Cursos_CursoID",
+                        column: x => x.CursoID,
+                        principalTable: "Cursos",
+                        principalColumn: "CursoID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CursoDisciplina_Disciplinas_DisciplinaID",
+                        column: x => x.DisciplinaID,
+                        principalTable: "Disciplinas",
+                        principalColumn: "DisciplinaID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -205,11 +348,39 @@ namespace Capitulo01.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CursoDisciplina_DisciplinaID",
+                table: "CursoDisciplina",
+                column: "DisciplinaID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Cursos_DepartamentoID",
+                table: "Cursos",
+                column: "DepartamentoID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CursosProfessores_ProfessorID",
+                table: "CursosProfessores",
+                column: "ProfessorID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Departamentos_InstituicaoID",
+                table: "Departamentos",
+                column: "InstituicaoID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Disciplinas_DepartamentoID",
+                table: "Disciplinas",
+                column: "DepartamentoID");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Academicos");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -226,19 +397,31 @@ namespace Capitulo01.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "CursoDisciplina");
+
+            migrationBuilder.DropTable(
+                name: "CursosProfessores");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
-            migrationBuilder.AlterColumn<string>(
-                name: "Nome",
-                table: "Academicos",
-                type: "nvarchar(max)",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(100)",
-                oldMaxLength: 100);
+            migrationBuilder.DropTable(
+                name: "Disciplinas");
+
+            migrationBuilder.DropTable(
+                name: "Cursos");
+
+            migrationBuilder.DropTable(
+                name: "Professores");
+
+            migrationBuilder.DropTable(
+                name: "Departamentos");
+
+            migrationBuilder.DropTable(
+                name: "Instituicoes");
         }
     }
 }

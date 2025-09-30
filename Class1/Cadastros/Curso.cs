@@ -1,22 +1,27 @@
-﻿using System;
+﻿using Modelo.Docente;
+using System;
 using System.Collections.Generic;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace Capitulo01.Modelo.Cadastros
 {
     public class Curso
     {
-        public int CursoID { get; set; }
+        public long CursoID { get; set; }  
+
+        [Required(ErrorMessage = "O nome do curso é obrigatório.")]
+        [StringLength(100, ErrorMessage = "O nome não pode exceder 100 caracteres.")]
         public string Nome { get; set; } = string.Empty;
 
-
-        public int DepartamentoID { get; set; }
+        [Required(ErrorMessage = "Selecione um departamento.")]
+        public long DepartamentoID { get; set; } 
         public Departamento? Departamento { get; set; }
 
         public ICollection<CursoDisciplina> CursosDisciplinas { get; set; } = new List<CursoDisciplina>();
+        public virtual ICollection<CursoProfessor> CursosProfessores { get; set; } = new List<CursoProfessor>();
     }
-
 }

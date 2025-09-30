@@ -1,0 +1,35 @@
+﻿@model Modelo.Docente.Professor
+
+@{
+    ViewData["Title"] = "Detalhes do Professor";
+    Layout = "_LayoutIES";
+}
+
+<div class="card-block">
+    <div class="card-header text-white bg-warning text-center h1">
+        Detalhes do Professor
+    </div>
+
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.ProfessorID)
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.ProfessorID)
+            </dd>
+
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.Nome)
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.Nome)
+            </dd>
+        </dl>
+    </div>
+
+    <div class="card-footer bg-dark text-center">
+        <a asp-action="Edit" asp-route-id="@Model.ProfessorID" class="btn btn-warning">Editar</a>
+        <a asp-action="Index" class="btn btn-info">Retornar à listagem</a>
+    </div>
+</div>
