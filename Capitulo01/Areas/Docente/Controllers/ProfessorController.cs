@@ -12,14 +12,16 @@ using System;
 namespace Capitulo01.Areas.Docente.Controllers
 {
     [Area("Docente")]
-    public class ProfessorController : Controller
-    {
+    public class ProfessorController : Controller //Define o controlador ProfessorController que herda de Controller
+    {   
+        //Injeção de dependência do contexto do banco de dados e inicialização dos objetos DAL necessários 
         private readonly IESContext _context;
         private readonly InstituicaoDAL instituicaoDAL;
         private readonly DepartamentoDAL departamentoDAL;
         private readonly CursoDAL cursoDAL;
         private readonly ProfessorDAL professorDAL;
 
+        //Construtor que recebe o contexto do banco e inicializa os objetos DAL 
         public ProfessorController(IESContext context)
         {
             _context = context;
@@ -29,19 +31,23 @@ namespace Capitulo01.Areas.Docente.Controllers
             professorDAL = new ProfessorDAL(context);
         }
 
+        //Retorna a lista de professores classificados por nome e exibe na Index 
         public IActionResult Index()
         {
             return View(professorDAL.ObterProfessoresClassificadosPorNome().ToList());
         }
 
+        //View para criar um novo professor 
         public IActionResult Create()
         {
             return View();
         }
 
+        //Post para criar um professor 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("Nome")] Professor professor)
+        public IActionResult Create([Bind("Nome")] Professor professor) //([Bind("Nome")] Professor professor) manipula o envio do form 
         {
             try
             {
@@ -53,6 +59,7 @@ namespace Capitulo01.Areas.Docente.Controllers
                         return View(professor);
                     }
 
+                    //TempData armazena msg temporárias entre requisições, ex msg de sucesso 
                     professorDAL.Inserir(professor);
                     TempData["Message"] = "Professor cadastrado com sucesso!";
                     return RedirectToAction(nameof(Index));
@@ -66,6 +73,7 @@ namespace Capitulo01.Areas.Docente.Controllers
             return View(professor);
         }
 
+        //Detalhes de um professor específico pelo ID 
         public IActionResult Details(long? id)
         {
             if (id == null)
@@ -82,6 +90,7 @@ namespace Capitulo01.Areas.Docente.Controllers
             return View(professor);
         }
 
+        //Exibe formulário de edição para professor existente 
         public IActionResult Edit(long? id)
         {
             if (id == null)
@@ -97,6 +106,8 @@ namespace Capitulo01.Areas.Docente.Controllers
 
             return View(professor);
         }
+
+        //Edita dados do professor 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -124,6 +135,7 @@ namespace Capitulo01.Areas.Docente.Controllers
             return View(professor);
         }
 
+        //Exibe confirmação de exclusão de professor 
         public IActionResult Delete(long? id)
         {
             if (id == null)
@@ -139,6 +151,8 @@ namespace Capitulo01.Areas.Docente.Controllers
 
             return View(professor);
         }
+
+        //Exclui prof do banco de dados e redireciona p Index 
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -157,6 +171,7 @@ namespace Capitulo01.Areas.Docente.Controllers
             }
         }
 
+        //Preenche os ViewBags com listas de instituições, departamentos, cursos e professores 
         public void PrepararViewBags(
             List<Instituicao> instituicoes,
             List<Departamento> departamentos,
@@ -192,6 +207,7 @@ namespace Capitulo01.Areas.Docente.Controllers
             ViewBag.Professores = professores;
         }
 
+        //View para add professores ao curso preenchendo os ViewBags com dados iniciais 
         [HttpGet]
         public IActionResult AdicionarProfessor()
         {
@@ -205,10 +221,15 @@ namespace Capitulo01.Areas.Docente.Controllers
             return View();
         }
 
+        //Envia os dados do form para add professor ao curso 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
+
+        //[Bind("InstituicaoID,DepartamentoID,CursoID,ProfessorID")] limita campos que podem ser vinculados
         public IActionResult AdicionarProfessor([Bind("InstituicaoID,DepartamentoID,CursoID,ProfessorID")] AdicionarProfessorViewModel model)
-        {
+        {   
+            //verifica se todos os dados foram selecionados 
             if (model.InstituicaoID == 0 ||
                 model.DepartamentoID == 0 ||
                 model.CursoID == 0 ||
@@ -217,17 +238,20 @@ namespace Capitulo01.Areas.Docente.Controllers
                 ModelState.AddModelError("", "É preciso selecionar todos os dados");
             }
             else
-            {
+            {   
+                //chama método que registra associação entre curso e professor no banco de dados 
                 cursoDAL.RegistrarProfessor(
                     (long)model.CursoID,
                     (long)model.ProfessorID
                 );
 
+                //Chama método que registra curso e professor na sessão http 
                 RegistrarProfessorNaSessao(
                     (long)model.CursoID,
                     (long)model.ProfessorID
                    );
 
+                //Prepara as oppções que aparecerão nos dropdowns 
                 PrepararViewBags(
                     instituicaoDAL.ObterInstituicoesClassificadasPorNome().ToList(),
                     departamentoDAL.ObterDepartamentosPorInstituicao((long)model.InstituicaoID).ToList(),
@@ -239,8 +263,10 @@ namespace Capitulo01.Areas.Docente.Controllers
             return View(model);
         }
 
+        //Armazena na sessão http a associação entre curso e professor 
         public void RegistrarProfessorNaSessao(long cursoID, long professorID)
-        {
+        {   
+        //Cria objeto CursoProfessor com IDs do curso e professor 
             var cursoProfessor = new CursoProfessor()
             {
                 ProfessorID = professorID,
@@ -258,35 +284,42 @@ namespace Capitulo01.Areas.Docente.Controllers
 
             cursosProfessor.Add(cursoProfessor);
 
+            //Recupera string do HttpContext.Session
             HttpContext.Session.SetString(
                 "cursosProfessores",
                 JsonConvert.SerializeObject(cursosProfessor)
             );
         }
 
+        //Exibe os útlimos registros de associação entre curso e professor
         public IActionResult VerificarUltimosRegistros()
         {
             List<CursoProfessor> cursosProfessor = new List<CursoProfessor>();
 
+            //Acessa valor armazenado na sessão sob a chave cursosProfessores 
             string cursosProfessoresSession = HttpContext.Session.GetString("cursosProfessores");
 
             if (cursosProfessoresSession != null)
-            {
+            {   
+                //Desserializa a string JSON de volta para uma lista de objetos CursoProfessor 
                 cursosProfessor = JsonConvert.DeserializeObject<List<CursoProfessor>>(cursosProfessoresSession);
             }
 
             return View(cursosProfessor);
         }
 
+        //Método retorna lista de departamentos em formato JSON para uma isntituição com base no ID
         public JsonResult ObterDepartamentosPorInstituicao(long actionID)
         {
             try
             {
                 var departamentos = departamentoDAL
-                    .ObterDepartamentosPorInstituicao(actionID)
+                    .ObterDepartamentosPorInstituicao(actionID) //Acessa o DAL para obter os departamentos de uma instituição específica
+                    //Projeta os departamentos em um formato anônimo para drodowns
                     .Select(d => new { value = d.DepartamentoID, text = d.Nome })
                     .ToList();
 
+                //Retorna departamentos em formato JSON 
                 return Json(departamentos);
             }
             catch (Exception ex)
@@ -295,6 +328,7 @@ namespace Capitulo01.Areas.Docente.Controllers
             }
         }
 
+        //Retorna lista de cursos em formato JSON 
         public JsonResult ObterCursosPorDepartamento(long actionID)
         {
             try
@@ -312,6 +346,7 @@ namespace Capitulo01.Areas.Docente.Controllers
             }
         }
 
+        //Retorna lista de professores em formato JSON 
         public JsonResult ObterProfessoresForaDoCurso(long actionID)
         {
             try
