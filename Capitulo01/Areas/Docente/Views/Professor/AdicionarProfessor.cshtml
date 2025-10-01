@@ -5,9 +5,11 @@
     Layout = "_LayoutIES";
 }
 
-@if (ViewBag.Mensagem != null)
+<!--Exibição da mensagem de sucesso via alert do Bootstrap caso ViewBag não seja nulo -->
+
+@if (ViewBag.Mensagem != null) 
 {
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <div class="alert alert-success alert-dismissible fade show" role="alert"> 
         <div class="d-flex align-items-center">
             <i class="fas fa-check-circle fa-2x text-success me-3"></i>
             <div>
@@ -15,10 +17,11 @@
                 <p class="mb-0">@ViewBag.Mensagem</p>
             </div>
         </div>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
     </div>
 }
 
+<!-- Cabeçalho da "caixa visual" via Bootstrap - Título da página -->
 <div class="card shadow-sm">
     <div class="card-header text-white bg-primary text-center py-3">
         <h1 class="mb-0">
@@ -27,14 +30,14 @@
         </h1>
     </div>
 
+    <!-- Corpo da página com o formulário de seleção em cascata -->
     <div class="card-body">
         <form asp-action="AdicionarProfessor" method="post">
-            @Html.AntiForgeryToken()
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            @Html.AntiForgeryToken() <!-- Previne ataques CSRF -->
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div> <!-- Mostra os erros de validação do modelo -->
 
             <div class="row">
                 <div class="col-md-8 offset-md-2">
-
                     <div class="alert alert-info border-info mb-4" role="alert">
                         <div class="d-flex align-items-center">
                             <i class="fas fa-info-circle fa-2x text-info me-3"></i>
@@ -45,16 +48,17 @@
                         </div>
                     </div>
 
+                    <!-- Associa o label ao campo InstituiçãoID do modelo -->
                     <div class="form-group mb-4">
-                        <label asp-for="InstituicaoID" class="form-label fw-bold">
+                        <label asp-for="InstituicaoID" class="form-label fw-bold"> 
                             <i class="fas fa-university text-primary me-2"></i>
                             Instituição:
                         </label>
-                        <select asp-for="InstituicaoID" class="form-control form-select-lg" id="ddlInstituicao">
+                        <select asp-for="InstituicaoID" class="form-control form-select-lg" id="ddlInstituicao"> 
                             <option value="0">Selecione a instituição</option>
                             @if (ViewBag.Instituicoes != null)
                             {
-                                @foreach (var instituicao in ViewBag.Instituicoes as List<Capitulo01.Modelo.Cadastros.Instituicao>)
+                                @foreach (var instituicao in ViewBag.Instituicoes as List<Capitulo01.Modelo.Cadastros.Instituicao>) // Popula a lista de instituições
                                 {
                                     if (instituicao.InstituicaoID != 0)
                                     {
@@ -66,6 +70,7 @@
                         <span asp-validation-for="InstituicaoID" class="text-danger"></span>
                     </div>
 
+                    <!-- Preenchimento dos selects de Departamentos via AJAX -->
                     <div class="form-group mb-4">
                         <label asp-for="DepartamentoID" class="form-label fw-bold">
                             <i class="fas fa-building text-warning me-2"></i>
@@ -77,6 +82,7 @@
                         <span asp-validation-for="DepartamentoID" class="text-danger"></span>
                     </div>
 
+                    <!-- Preenchimento dos selects de Curso via AJAX -->
                     <div class="form-group mb-4">
                         <label asp-for="CursoID" class="form-label fw-bold">
                             <i class="fas fa-graduation-cap text-success me-2"></i>
@@ -88,6 +94,7 @@
                         <span asp-validation-for="CursoID" class="text-danger"></span>
                     </div>
 
+                    <!-- Preenchimento dos selects de Professor via AJAX -->
                     <div class="form-group mb-4">
                         <label asp-for="ProfessorID" class="form-label fw-bold">
                             <i class="fas fa-chalkboard-teacher text-info me-2"></i>
@@ -105,6 +112,7 @@
 
                     <hr class="my-4">
 
+                    <!-- Botões para submeter o formulário, ver últimos registros e voltar à lista de professores -->
                     <div class="d-grid gap-2 d-md-flex justify-content-md-center">
                         <button type="submit" class="btn btn-success btn-lg me-md-2" id="btnSubmit">
                             <i class="fas fa-save"></i> Registrar Professor no Curso
@@ -121,6 +129,7 @@
         </form>
     </div>
 
+    <!-- Instrução de "rodapé" para auxiliar o usuário -->
     <div class="card-footer bg-light text-center text-muted">
         <small>
             <i class="fas fa-info-circle"></i>
@@ -129,10 +138,13 @@
     </div>
 </div>
 
-@section Scripts {
+<!-- Scripts Js para manipulação dos selects em cascata via AJAX -->
+
+@section Scripts { 
     <script type="text/javascript">
-        $(document).ready(function () {
-            console.log("Sistema de cascata carregado");
+        $(document).ready(function () { //garante que script só sera executado após carregamento da página HTML, evita erros ao tentar acessar elementos não renderizados 
+
+//Função que verifica se todos os selects foram preenchidos com valores diferentes de 0, se sim, habilita o botão de submeter form 
 
             function verificarFormularioCompleto() {
                 var instituicao = $("#ddlInstituicao").val();
@@ -148,15 +160,20 @@
                 $("#btnSubmit").prop('disabled', !completo);
             }
 
+//Função disparada quando user seleciona instituição no dropdown, carrega departamentos via AJAX   
+
             $("#ddlInstituicao").change(function () {
-                var instituicaoID = $(this).val();
-                console.log("Instituição selecionada:", instituicaoID);
+                var instituicaoID = $(this).val(); //Pega valor da instituição selecionada 
+    
+//Reseta seguintes selects para estados iniciais 
 
                 $("#ddlDepartamento").empty().append('<option value="0">Carregando...</option>').prop('disabled', false);
                 $("#ddlCurso").empty().append('<option value="0">Aguarde seleção do departamento</option>').prop('disabled', true);
                 $("#ddlProfessor").empty().append('<option value="0">Aguarde seleção do curso</option>').prop('disabled', true);
 
-                verificarFormularioCompleto();
+                verificarFormularioCompleto(); //Verifica se form está completo 
+
+//Se uma instituição foi selecionada, chama a função AJAX para carregar departamentos 
 
                 if (instituicaoID && instituicaoID != "0") {
                     carregarDepartamentos(instituicaoID);
@@ -168,13 +185,16 @@
             });
 
             $("#ddlDepartamento").change(function () {
-                var departamentoID = $(this).val();
-                console.log("Departamento selecionado:", departamentoID);
+                var departamentoID = $(this).val(); //Pega valor de departamento 
+
+//Reseta selects de Curso e Professor para estados iniciais 
 
                 $("#ddlCurso").empty().append('<option value="0">Carregando...</option>').prop('disabled', false);
                 $("#ddlProfessor").empty().append('<option value="0">Aguarde seleção do curso</option>').prop('disabled', true);
 
-                verificarFormularioCompleto();
+                verificarFormularioCompleto(); //Verifica form 
+
+//Se valor for válido, chama função AJAX para carregar cursos, senão, reseta os proximos selects 
 
                 if (departamentoID && departamentoID != "0") {
                     carregarCursos(departamentoID);
@@ -184,13 +204,18 @@
                 }
             });
 
+//Pega ID do curso, reseta select de professores e chama função AJAX para carregar prof disponíveis 
+
             $("#ddlCurso").change(function () {
                 var cursoID = $(this).val();
                 console.log("Curso selecionado:", cursoID);
 
+                //Limpa opções que estão no select e depois adiciona nova opção dizendo que sistema está carregando
                 $("#ddlProfessor").empty().append('<option value="0">Carregando...</option>').prop('disabled', false);
-
+                //Prop(disabled, false) habilita a seleção de professores (dropdown do ddlProfessor fica ativo)
                 verificarFormularioCompleto();
+
+//Se curso não for nulo, chama AJAX para carregar professores , senão reseta select de professores 
 
                 if (cursoID && cursoID != "0") {
                     carregarProfessores(cursoID);
@@ -199,17 +224,22 @@
                 }
             });
 
+//Revalida o formulário quanddo user seleciona professor no dropdown 
+
             $("#ddlProfessor").change(function () {
                 verificarFormularioCompleto();
             });
+
+//Requisição GET via AJAX para controller ProfessorController para obter departamentos da instituição selecionada 
 
             function carregarDepartamentos(instituicaoID) {
                 $.ajax({
                     url: '@Url.Action("ObterDepartamentosPorInstituicao", "Professor", new { area = "Docente" })',
                     type: 'GET',
                     data: { actionID: instituicaoID },
-                    success: function (data) {
-                        console.log("Departamentos recebidos:", data);
+                    success: function (data) { //Se departamentos forem recebidos ->
+
+//Limpa select de departamentos e adiciona novas opções vindas do servidor (espera array de objetos com .value e .text)
 
                         $("#ddlDepartamento").empty().append('<option value="0">Selecione o departamento</option>');
 
@@ -223,26 +253,31 @@
 
                         verificarFormularioCompleto();
                     },
-                    error: function (xhr, status, error) {
-                        console.error("Erro ao carregar departamentos:", error);
+                    error: function (xhr, status, error) { // em caso de erro
+                        //$("#ddlDepartamento") é seletor jQuery para elemento HTML com id ddlDepartamento, está selecionando dropdown que permite ao user escolher departamento
+                        //.empty() remove todos os elementos filhos do dropdown selecionado (limpa opções visíveis no select)
+                        //.append('<option value="0">Erro ao carregar departamentos</option>') adiciona no dropdown uma nova opção com valor 0 que contém o texto de erro
                         $("#ddlDepartamento").empty().append('<option value="0">Erro ao carregar departamentos</option>');
                         alert("Erro ao carregar departamentos.");
                     }
                 });
             }
 
-            function carregarCursos(departamentoID) {
-                $.ajax({
-                    url: '@Url.Action("ObterCursosPorDepartamento", "Professor", new { area = "Docente" })',
-                    type: 'GET',
-                    data: { actionID: departamentoID },
-                    success: function (data) {
-                        console.log("Cursos recebidos:", data);
+//Carrega lista de cursos associados a departamento específico a partir de AJAX
 
+            function carregarCursos(departamentoID) { //departamentoID identifica o depart para o qual quer carregar os cursos 
+                $.ajax({ //requisições assícronas, dados atualizados dinamicamemte 
+                    url: '@Url.Action("ObterCursosPorDepartamento", "Professor", new { area = "Docente" })',
+                    type: 'GET', //estou pedindo dados ao servidor ao invés de enviar (POST) 
+                    data: { actionID: departamentoID }, //ActionID é o DepartamentoI. Objeto DepID será enviado ao servidor e usado no controller para recuperar os cursos daquele DepID 
+                    success: function (data) { //Data é o argumento que contém os dados retornados para o servidor 
+
+                        //Limpa opções existentes no dropdown ddlCurso e adiciona opção p selecionar o curso 
                         $("#ddlCurso").empty().append('<option value="0">Selecione o curso</option>');
 
-                        if (data && data.length > 0) {
-                            $.each(data, function (index, item) {
+                        if (data && data.length > 0) { //Verifica se existe pelo menos 1 curso na lista
+                            $.each(data, function (index, item) { //$.each percorre todos os itens da lista de cursos (data é a lista de objetos com cursos)
+                                //Para cada item, nova opção é adicionada no ddlCurso 
                                 $("#ddlCurso").append('<option value="' + item.value + '">' + item.text + '</option>');
                             });
                         } else {
@@ -252,20 +287,21 @@
                         verificarFormularioCompleto();
                     },
                     error: function (xhr, status, error) {
-                        console.error("Erro ao carregar cursos:", error);
                         $("#ddlCurso").empty().append('<option value="0">Erro ao carregar cursos</option>');
                         alert("Erro ao carregar cursos.");
                     }
                 });
             }
 
+//Carrega professores associados a um curso específico
+
             function carregarProfessores(cursoID) {
                 $.ajax({
+                    //URL gerada dinamicamente usando sintaxe Razor (ARROBAurl.action), pede a lista de prof 
                     url: '@Url.Action("ObterProfessoresForaDoCurso", "Professor", new { area = "Docente" })',
                     type: 'GET',
                     data: { actionID: cursoID },
                     success: function (data) {
-                        console.log("Professores recebidos:", data);
 
                         $("#ddlProfessor").empty().append('<option value="0">Selecione o professor</option>');
 
@@ -280,7 +316,6 @@
                         verificarFormularioCompleto();
                     },
                     error: function (xhr, status, error) {
-                        console.error("Erro ao carregar professores:", error);
                         $("#ddlProfessor").empty().append('<option value="0">Erro ao carregar professores</option>');
                         alert("Erro ao carregar professores.");
                     }
