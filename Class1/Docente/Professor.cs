@@ -13,7 +13,7 @@ namespace Modelo.Docente
 
         [Required(ErrorMessage = "O nome do professor é obrigatório.")]
         [StringLength(100, ErrorMessage = "O nome não pode exceder 100 caracteres.")]
-        public string Nome { get; set; } = string.Empty;
+        public string Nome { get; set; }
 
         public virtual ICollection<CursoProfessor> CursosProfessores { get; set; } = new List<CursoProfessor>();
     }

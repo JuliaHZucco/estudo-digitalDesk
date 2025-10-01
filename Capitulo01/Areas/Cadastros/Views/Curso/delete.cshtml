@@ -5,52 +5,65 @@
     Layout = "_LayoutIES";
 }
 
-<div class="card-block">
-    <div class="card-header text-white bg-danger text-center h1">
-        Tem certeza que deseja excluir este curso?
+<div class="card shadow-sm">
+    <div class="card-header text-white bg-danger text-center py-3">
+        <h1 class="mb-0">Excluir Curso</h1>
     </div>
 
     <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-3">
-                @Html.DisplayNameFor(model => model.CursoID)
-            </dt>
-            <dd class="col-sm-9">
-                @Html.DisplayFor(model => model.CursoID)
-            </dd>
-
-            <dt class="col-sm-3">
-                @Html.DisplayNameFor(model => model.Nome)
-            </dt>
-            <dd class="col-sm-9">
-                @Html.DisplayFor(model => model.Nome)
-            </dd>
-
-            <dt class="col-sm-3">
-                Departamento
-            </dt>
-            <dd class="col-sm-9">
-                @Html.DisplayFor(model => model.Departamento.Nome)
-            </dd>
-
-            <dt class="col-sm-3">
-                Instituição
-            </dt>
-            <dd class="col-sm-9">
-                @Html.DisplayFor(model => model.Departamento.Instituicao.Nome)
-            </dd>
-        </dl>
-
-        <form asp-action="Delete">
-            <input type="hidden" asp-for="CursoID" />
-            <div class="form-group text-center h3">
-                <input type="submit" value="Confirmar Exclusão" class="btn btn-danger" />
-                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+        <div class="alert alert-warning border-warning" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle fa-2x text-warning me-3"></i>
+                <div>
+                    <h4 class="alert-heading">Atenção!</h4>
+                    <p class="mb-0">Você tem certeza que deseja excluir este curso? Esta ação irá remover todas as associações com professores e disciplinas.</p>
+                </div>
             </div>
-        </form>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title text-center mb-3">Dados do Curso a ser Excluído</h5>
+
+                        <dl class="row">
+                            <dt class="col-sm-3 fw-bold">ID:</dt>
+                            <dd class="col-sm-9">@Html.DisplayFor(model => model.CursoID)</dd>
+
+                            <dt class="col-sm-3 fw-bold">Nome:</dt>
+                            <dd class="col-sm-9 fw-bold text-danger">@Html.DisplayFor(model => model.Nome)</dd>
+
+                            <dt class="col-sm-3 fw-bold">Departamento:</dt>
+                            <dd class="col-sm-9">@Html.DisplayFor(model => model.Departamento.Nome)</dd>
+
+                            <dt class="col-sm-3 fw-bold">Instituição:</dt>
+                            <dd class="col-sm-9">@Html.DisplayFor(model => model.Departamento.Instituicao.Nome)</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <form asp-action="Delete" method="post" class="mt-4">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="CursoID" />
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <button type="submit" class="btn btn-danger btn-lg me-md-2">
+                            <i class="fas fa-trash"></i> Confirmar Exclusão
+                        </button>
+                        <a asp-action="Details" asp-route-id="@Model.CursoID" class="btn btn-info btn-lg me-md-2">
+                            <i class="fas fa-eye"></i> Ver Detalhes
+                        </a>
+                        <a asp-action="Index" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-arrow-left"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
-    <div class="card-footer bg-warning text-center text-dark">
-        <strong>Atenção:</strong> Esta ação não pode ser desfeita!
+    <div class="card-footer bg-light text-center text-muted">
+        <small>Confirme a exclusão do curso ou cancele a operação</small>
     </div>
 </div>

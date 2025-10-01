@@ -5,48 +5,75 @@
     Layout = "_LayoutIES";
 }
 
-<div class="card-block">
-    <div class="card-header text-white bg-danger text-center h1">
-        Excluir Acadêmico
+<div class="card shadow-sm">
+    <div class="card-header text-white bg-danger text-center py-3">
+        <h1 class="mb-0">Excluir Acadêmico</h1>
     </div>
 
     <div class="card-body">
-        <h3 class="text-center text-danger mb-4">Tem certeza que deseja excluir este acadêmico?</h3>
-
-        <form asp-action="Delete" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-group">
-                <label asp-for="RegistroAcademico" class="control-label"></label>
-                <input asp-for="RegistroAcademico" class="form-control" disabled />
+        <div class="alert alert-danger border-danger" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle fa-2x text-danger me-3"></i>
+                <div>
+                    <h4 class="alert-heading">Atenção!</h4>
+                    <p class="mb-0">Você tem certeza que deseja excluir este acadêmico? Esta ação irá remover todos os dados e não pode ser desfeita.</p>
+                </div>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label asp-for="Nome" class="control-label"></label>
-                <input asp-for="Nome" class="form-control" disabled />
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title text-center mb-3">Dados do Acadêmico a ser Excluído</h5>
+
+                        @if (Model.Foto != null && Model.Foto.Length > 0)
+                        {
+                            <div class="text-center mb-3">
+                                <img src="data:@Model.FotoMimeType;base64,@Convert.ToBase64String(Model.Foto)"
+                                     alt="Foto do acadêmico @Model.Nome"
+                                     class="img-thumbnail rounded-circle"
+                                     style="max-width: 150px; max-height: 150px;" />
+                            </div>
+                        }
+
+                        <dl class="row">
+                            <dt class="col-sm-4 fw-bold">ID:</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.AcademicoID)</dd>
+
+                            <dt class="col-sm-4 fw-bold">Registro:</dt>
+                            <dd class="col-sm-8 fw-bold text-danger">@Html.DisplayFor(model => model.RegistroAcademico)</dd>
+
+                            <dt class="col-sm-4 fw-bold">Nome:</dt>
+                            <dd class="col-sm-8 fw-bold text-danger">@Html.DisplayFor(model => model.Nome)</dd>
+
+                            <dt class="col-sm-4 fw-bold">Nascimento:</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Nascimento)</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <form asp-action="Delete" method="post" class="mt-4">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="AcademicoID" />
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <button type="submit" class="btn btn-danger btn-lg me-md-2">
+                            <i class="fas fa-trash"></i> Confirmar Exclusão
+                        </button>
+                        <a asp-action="Details" asp-route-id="@Model.AcademicoID" class="btn btn-info btn-lg me-md-2">
+                            <i class="fas fa-eye"></i> Ver Detalhes
+                        </a>
+                        <a asp-action="Index" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-arrow-left"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
             </div>
-
-            <div class="form-group">
-                <label asp-for="Nascimento" class="control-label"></label>
-                <input asp-for="Nascimento" class="form-control" disabled />
-            </div>
-
-            <input type="hidden" asp-for="AcademicoID" />
-
-            <div class="form-group text-center h3">
-                <input type="submit" value="Excluir Acadêmico" class="btn btn-danger" />
-                <a asp-action="Index" class="btn btn-info">Cancelar</a>
-            </div>
-        </form>
+        </div>
     </div>
 
-    <div class="card-footer bg-dark text-center text-white">
-        Confirme a exclusão ou clique em cancelar
+    <div class="card-footer bg-light text-center text-muted">
+        <small>Confirme a exclusão do acadêmico ou cancele a operação</small>
     </div>
 </div>
-
-@section ScriptPage {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}

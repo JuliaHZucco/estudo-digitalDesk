@@ -15,9 +15,11 @@ namespace Capitulo01.Data.DAL.Cadastros
 
         public IQueryable<Curso> ObterCursosPorDepartamento(long departamentoID)
         {
-            return _context.Cursos
-                           .Where(c => c.DepartamentoID == departamentoID)
-                           .OrderBy(c => c.Nome);
+            var cursos = _context.Cursos
+                .Where(c => c.DepartamentoID == departamentoID)
+                .OrderBy(c => c.Nome);
+
+            return cursos;
         }
 
         public IQueryable<Professor> ObterProfessoresForaDoCurso(long cursoID)
@@ -27,11 +29,14 @@ namespace Capitulo01.Data.DAL.Cadastros
                 .Include(cp => cp.CursosProfessores)
                 .First();
 
-            var professoresDoCurso = curso.CursosProfessores.Select(cp => cp.ProfessorID).ToArray();
+            var professoresDoCurso = curso.CursosProfessores
+                .Select(cp => cp.ProfessorID)
+                .ToArray();
 
-            return _context.Professores
-                           .Where(p => !professoresDoCurso.Contains(p.ProfessorID))
-                           .OrderBy(p => p.Nome);
+            var professoresForaDoCurso = _context.Professores
+                .Where(p => !professoresDoCurso.Contains(p.ProfessorID));
+
+            return professoresForaDoCurso;
         }
 
         public void RegistrarProfessor(long cursoID, long professorID)
@@ -43,7 +48,11 @@ namespace Capitulo01.Data.DAL.Cadastros
 
             var professor = _context.Professores.Find(professorID);
 
-            curso.CursosProfessores.Add(new CursoProfessor() { Curso = curso, Professor = professor });
+            curso.CursosProfessores.Add(new CursoProfessor()
+            {
+                Curso = curso,
+                Professor = professor
+            });
 
             _context.SaveChanges();
         }

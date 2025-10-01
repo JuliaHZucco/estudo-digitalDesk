@@ -5,104 +5,72 @@
     Layout = "_LayoutIES";
 }
 
-@section Styles {
-    <environment include="Development">
-        <link rel="stylesheet" href="~/lib/font-awesome/css/fontawesome.min.css" />
-    </environment>
-    <environment exclude="Development">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-              asp-fallback-href="~/lib/font-awesome/css/font-awesome.min.css"
-              asp-fallback-test-class="sr-only"
-              asp-fallback-test-property="position"
-              asp-fallback-test-value="absolute" />
-    </environment>
-}
-
-<div class="card-block">
-    <div class="card-header text-white bg-secondary text-center h1">
-        Exibindo um acadêmico existente
+<div class="card shadow-sm">
+    <div class="card-header text-white bg-info text-center py-3">
+        <h1 class="mb-0">Detalhes do Acadêmico</h1>
     </div>
 
     <div class="card-body">
         <div class="row">
-            <div class="col-9">
-                <div class="form-group">
-                    <label asp-for="AcademicoID" class="control-label"></label>
-                    <br />
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">
-                                <i class="fa fa-key" aria-hidden="true"></i>
-                            </span>
-                        </div>
-                        <input asp-for="AcademicoID" class="form-control" disabled="disabled" />
-                    </div>
-
-                    <label asp-for="RegistroAcademico" class="control-label"></label>
-                    <br />
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">
-                                <i class="fa fa-address-card-o" aria-hidden="true"></i>
-                            </span>
-                        </div>
-                        <input asp-for="RegistroAcademico" class="form-control" disabled="disabled" />
-                    </div>
-
-                    <label asp-for="Nome" class="control-label"></label>
-                    <br />
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">
-                                <i class="fa fa-user-circle-o" aria-hidden="true"></i>
-                            </span>
-                        </div>
-                        <input asp-for="Nome" class="form-control" disabled="disabled" />
-                    </div>
-
-                    <label asp-for="Nascimento" class="control-label"></label>
-                    <br />
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">
-                                <i class="fa fa-address-card-o" aria-hidden="true"></i>
-                            </span>
-                        </div>
-                        <input asp-for="Nascimento" class="form-control" disabled="disabled" />
-                    </div>
-                </div>
-            </div>
-            <div class="col-3">
+            <div class="col-md-8 offset-md-2">
                 @if (Model.Foto != null && Model.Foto.Length > 0)
                 {
-                    <img class="img-thumbnail"
-                         src="@Url.Action("GetFoto", "Academico", new { id = Model.AcademicoID })"
-                         style="display:block; margin-left:auto; margin-right:auto;"
-                         alt="Foto do Acadêmico" />
-
-                    <div class="text-center mt-2">
-                        @Html.ActionLink("Download", "DownloadFoto", "Academico", new { id = Model.AcademicoID }, new { @class = "btn btn-sm btn-success" })
+                    <div class="text-center mb-4">
+                        <img src="data:@Model.FotoMimeType;base64,@Convert.ToBase64String(Model.Foto)"
+                             alt="Foto do acadêmico @Model.Nome"
+                             class="img-thumbnail rounded-circle"
+                             style="max-width: 200px; max-height: 200px;" />
                     </div>
                 }
                 else
                 {
-                    <div class="text-center text-muted">
-                        <i class="fa fa-user fa-5x"></i>
-                        <p>Sem foto</p>
+                    <div class="text-center mb-4">
+                        <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center"
+                             style="width: 200px; height: 200px;">
+                            <i class="fas fa-user fa-5x text-white"></i>
+                        </div>
+                        <p class="text-muted mt-2">Sem foto cadastrada</p>
                     </div>
                 }
+
+                <dl class="row">
+                    <dt class="col-sm-4 fw-bold text-muted">ID:</dt>
+                    <dd class="col-sm-8 fs-5">@Html.DisplayFor(model => model.AcademicoID)</dd>
+
+                    <dt class="col-sm-4 fw-bold text-muted">Registro Acadêmico:</dt>
+                    <dd class="col-sm-8 fs-5 fw-bold text-primary">@Html.DisplayFor(model => model.RegistroAcademico)</dd>
+
+                    <dt class="col-sm-4 fw-bold text-muted">Nome:</dt>
+                    <dd class="col-sm-8 fs-4 fw-bold text-primary">@Html.DisplayFor(model => model.Nome)</dd>
+
+                    <dt class="col-sm-4 fw-bold text-muted">Data de Nascimento:</dt>
+                    <dd class="col-sm-8 fs-5">@Html.DisplayFor(model => model.Nascimento)</dd>
+
+                    @if (!string.IsNullOrEmpty(Model.FotoMimeType))
+                    {
+                        <dt class="col-sm-4 fw-bold text-muted">Tipo da Foto:</dt>
+                        <dd class="col-sm-8 fs-6 text-muted">@Model.FotoMimeType</dd>
+                    }
+                </dl>
+
+                <hr class="my-4">
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <a asp-action="Edit" asp-route-id="@Model.AcademicoID" class="btn btn-warning btn-lg me-md-2">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@Model.AcademicoID" class="btn btn-danger btn-lg me-md-2">
+                        <i class="fas fa-trash"></i> Excluir
+                    </a>
+                    <a asp-action="Index" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-list"></i> Voltar à Lista
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="card-footer bg-info text-center text-white">
-        <a asp-action="Edit" class="btn btn-warning" asp-route-id="@Model.AcademicoID">Alterar</a> |
-        <a asp-action="Index" class="btn btn-warning">Retornar à listagem de acadêmicos</a>
+    <div class="card-footer bg-light text-center text-muted">
+        <small>Informações detalhadas do acadêmico selecionado</small>
     </div>
 </div>
-
-@section ScriptPage {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}

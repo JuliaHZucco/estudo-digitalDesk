@@ -5,99 +5,97 @@
     Layout = "_LayoutIES";
 }
 
-<div class="card-block">
-    <div class="card-header text-white bg-secondary text-center h1">
-        Alterando um acadêmico existente
+<div class="card shadow-sm">
+    <div class="card-header text-white bg-warning text-center py-3">
+        <h1 class="mb-0">Editar Acadêmico</h1>
     </div>
 
     <div class="card-body">
         @if (!ViewData.ModelState.IsValid)
         {
-            <div class="alert alert-danger">
-                <h5>Erros encontrados:</h5>
-                <ul>
-                    @foreach (var modelError in ViewData.ModelState)
-                    {
-                        foreach (var error in modelError.Value.Errors)
-                        {
-                            <li><strong>@modelError.Key:</strong> @error.ErrorMessage</li>
-                        }
-                    }
-                </ul>
+            <div class="alert alert-danger border-danger" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-circle fa-2x text-danger me-3"></i>
+                    <div>
+                        <h5 class="alert-heading">Erros encontrados:</h5>
+                        <div asp-validation-summary="All" class="text-danger mb-0"></div>
+                    </div>
+                </div>
             </div>
         }
 
         <form enctype="multipart/form-data" asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
             <input type="hidden" asp-for="AcademicoID" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
             <div class="row">
-                <div class="col-8">
-                    <div class="form-group">
-                        <label asp-for="RegistroAcademico" class="control-label"></label>
-                        <input asp-for="RegistroAcademico" class="form-control" />
+                <div class="col-md-8 offset-md-2">
+                    <div class="form-group mb-3">
+                        <label class="form-label text-muted">ID do Acadêmico:</label>
+                        <input value="@Model.AcademicoID" class="form-control" readonly disabled />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="RegistroAcademico" class="form-label fw-bold">Registro Acadêmico:</label>
+                        <input asp-for="RegistroAcademico" class="form-control form-control-lg" />
                         <span asp-validation-for="RegistroAcademico" class="text-danger"></span>
                     </div>
 
-                    <div class="form-group">
-                        <label asp-for="Nome" class="control-label"></label>
-                        <input asp-for="Nome" class="form-control" />
+                    <div class="form-group mb-3">
+                        <label asp-for="Nome" class="form-label fw-bold">Nome Completo:</label>
+                        <input asp-for="Nome" class="form-control form-control-lg" />
                         <span asp-validation-for="Nome" class="text-danger"></span>
                     </div>
 
-                    <div class="form-group">
-                        <label asp-for="Nascimento" class="control-label"></label>
-                        <input asp-for="Nascimento" class="form-control" type="date" />
+                    <div class="form-group mb-3">
+                        <label asp-for="Nascimento" class="form-label fw-bold">Data de Nascimento:</label>
+                        <input asp-for="Nascimento" class="form-control form-control-lg" type="date" />
                         <span asp-validation-for="Nascimento" class="text-danger"></span>
                     </div>
 
-                    <div class="form-group">
-                        <label class="control-label">Nova Foto (Opcional)</label>
-                        <input type="file" name="foto" class="form-control" accept="image/*" />
-                        <small class="form-text text-muted">Selecione uma nova imagem para substituir a atual</small>
-                    </div>
-                </div>
-
-                <div class="col-4">
                     @if (Model.Foto != null && Model.Foto.Length > 0)
                     {
-                        <div class="text-center">
-                            <p><strong>Foto Atual:</strong></p>
-                            <img src="@Url.Action("GetFoto", "Academico", new { id = Model.AcademicoID })"
-                                 alt="Foto atual"
-                                 style="max-width: 200px; max-height: 200px;"
-                                 class="img-thumbnail" />
-
-                            <div class="checkbox mt-2">
-                                <label>
-                                    <input type="checkbox" name="chkRemoverFoto" value="Sim"> Remover Foto
-                                </label>
-                                <input type="hidden" name="chkRemoverFoto" value="Nao"> 
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-bold">Foto Atual:</label>
+                            <div class="text-center">
+                                <img src="data:@Model.FotoMimeType;base64,@Convert.ToBase64String(Model.Foto)"
+                                     alt="Foto do acadêmico" class="img-thumbnail" style="max-width: 200px; max-height: 200px;" />
                             </div>
                         </div>
                     }
-                    else
-                    {
-                        <div class="text-center text-muted">
-                            <i class="fa fa-user fa-3x"></i>
-                            <p>Sem foto</p>
-                        </div>
-                    }
-                </div>
-            </div>
 
-            <div class="form-group text-center h3 mt-4">
-                <input type="submit" value="Atualizar Acadêmico" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-warning">Retornar à listagem de acadêmicos</a>
+                    <div class="form-group mb-4">
+                        <label class="form-label fw-bold">Nova Foto (Opcional):</label>
+                        <input type="file" name="foto" class="form-control form-control-lg" accept="image/*" />
+                        <div class="form-text">
+                            <i class="fas fa-info-circle text-info"></i>
+                            Selecione uma nova imagem para substituir a atual - <strong>Opcional</strong>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <button type="submit" class="btn btn-warning btn-lg me-md-2">
+                            <i class="fas fa-save"></i> Salvar Alterações
+                        </button>
+                        <a asp-action="Details" asp-route-id="@Model.AcademicoID" class="btn btn-info btn-lg me-md-2">
+                            <i class="fas fa-eye"></i> Ver Detalhes
+                        </a>
+                        <a asp-action="Index" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-arrow-left"></i> Voltar à Lista
+                        </a>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
 
-    <div class="card-footer bg-info text-center text-white">
-        Informe os dados acima e/ou clique em um dos botões de ação
+    <div class="card-footer bg-light text-center text-muted">
+        <small>Modifique os dados do acadêmico e clique em "Salvar Alterações"</small>
     </div>
 </div>
 
-@section ScriptPage {
+@section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }

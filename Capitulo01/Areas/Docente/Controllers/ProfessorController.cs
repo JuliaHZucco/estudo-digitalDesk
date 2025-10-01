@@ -1,10 +1,13 @@
 ﻿using Capitulo01.Data;
 using Capitulo01.Data.DAL.Cadastros;
-using Microsoft.AspNetCore.Mvc;
 using Capitulo01.Data.DAL.Docente;
 using Capitulo01.Modelo.Cadastros;
-using Modelo.Docente;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Capitulo01.Areas.Docente.Models;
+using Modelo.Docente; 
+using Newtonsoft.Json;
+using System;
 
 namespace Capitulo01.Areas.Docente.Controllers
 {
@@ -154,28 +157,49 @@ namespace Capitulo01.Areas.Docente.Controllers
             }
         }
 
-        public void PrepararViewBags(List<Instituicao> instituicoes, List<Departamento> departamentos, List<Curso> cursos, List<Professor> professores)
+        public void PrepararViewBags(
+            List<Instituicao> instituicoes,
+            List<Departamento> departamentos,
+            List<Curso> cursos,
+            List<Professor> professores)
         {
-            instituicoes.Insert(0, new Instituicao() { InstituicaoID = 0, Nome = "Selecione a instituição" });
+            instituicoes.Insert(0, new Instituicao()
+            {
+                InstituicaoID = 0,
+                Nome = "Selecione a instituição"
+            });
             ViewBag.Instituicoes = instituicoes;
 
-            departamentos.Insert(0, new Departamento() { DepartamentoID = 0, Nome = "Selecione o departamento" });
+            departamentos.Insert(0, new Departamento()
+            {
+                DepartamentoID = 0,
+                Nome = "Selecione o departamento"
+            });
             ViewBag.Departamentos = departamentos;
 
-            cursos.Insert(0, new Curso() { CursoID = 0, Nome = "Selecione o curso" });
+            cursos.Insert(0, new Curso()
+            {
+                CursoID = 0,
+                Nome = "Selecione o curso"
+            });
             ViewBag.Cursos = cursos;
 
-            professores.Insert(0, new Professor() { ProfessorID = 0, Nome = "Selecione o professor" });
+            professores.Insert(0, new Professor()
+            {
+                ProfessorID = 0,
+                Nome = "Selecione o professor"
+            });
             ViewBag.Professores = professores;
         }
+
         [HttpGet]
         public IActionResult AdicionarProfessor()
         {
             PrepararViewBags(
                 instituicaoDAL.ObterInstituicoesClassificadasPorNome().ToList(),
-                new List<Departamento>(),
-                new List<Curso>(),
-                professorDAL.ObterProfessoresClassificadosPorNome().ToList()
+                new List<Departamento>().ToList(),
+                new List<Curso>().ToList(),
+                new List<Professor>().ToList()
             );
 
             return View();
@@ -183,23 +207,26 @@ namespace Capitulo01.Areas.Docente.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AdicionarProfessor([Bind("InstituicaoID, DepartamentoID, CursoID, ProfessorID")] AdicionarProfessorViewModel model)
+        public IActionResult AdicionarProfessor([Bind("InstituicaoID,DepartamentoID,CursoID,ProfessorID")] AdicionarProfessorViewModel model)
         {
-            if (model.InstituicaoID == 0 || model.DepartamentoID == 0 || model.CursoID == 0 || model.ProfessorID == 0)
+            if (model.InstituicaoID == 0 ||
+                model.DepartamentoID == 0 ||
+                model.CursoID == 0 ||
+                model.ProfessorID == 0)
             {
                 ModelState.AddModelError("", "É preciso selecionar todos os dados");
             }
             else
             {
-                try
-                {
-                    cursoDAL.RegistrarProfessor((long)model.CursoID, (long)model.ProfessorID);
-                    ViewBag.Mensagem = "Professor adicionado ao curso com sucesso!";
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", $"Erro ao registrar professor: {ex.Message}");
-                }
+                cursoDAL.RegistrarProfessor(
+                    (long)model.CursoID,
+                    (long)model.ProfessorID
+                );
+
+                RegistrarProfessorNaSessao(
+                    (long)model.CursoID,
+                    (long)model.ProfessorID
+                   );
 
                 PrepararViewBags(
                     instituicaoDAL.ObterInstituicoesClassificadasPorNome().ToList(),
@@ -212,14 +239,54 @@ namespace Capitulo01.Areas.Docente.Controllers
             return View(model);
         }
 
+        public void RegistrarProfessorNaSessao(long cursoID, long professorID)
+        {
+            var cursoProfessor = new CursoProfessor()
+            {
+                ProfessorID = professorID,
+                CursoID = cursoID
+            };
+
+            List<CursoProfessor> cursosProfessor = new List<CursoProfessor>();
+
+            string cursosProfessoresSession = HttpContext.Session.GetString("cursosProfessores");
+
+            if (cursosProfessoresSession != null)
+            {
+                cursosProfessor = JsonConvert.DeserializeObject<List<CursoProfessor>>(cursosProfessoresSession);
+            }
+
+            cursosProfessor.Add(cursoProfessor);
+
+            HttpContext.Session.SetString(
+                "cursosProfessores",
+                JsonConvert.SerializeObject(cursosProfessor)
+            );
+        }
+
+        public IActionResult VerificarUltimosRegistros()
+        {
+            List<CursoProfessor> cursosProfessor = new List<CursoProfessor>();
+
+            string cursosProfessoresSession = HttpContext.Session.GetString("cursosProfessores");
+
+            if (cursosProfessoresSession != null)
+            {
+                cursosProfessor = JsonConvert.DeserializeObject<List<CursoProfessor>>(cursosProfessoresSession);
+            }
+
+            return View(cursosProfessor);
+        }
+
         public JsonResult ObterDepartamentosPorInstituicao(long actionID)
         {
             try
             {
                 var departamentos = departamentoDAL
                     .ObterDepartamentosPorInstituicao(actionID)
-                    .Select(d => new { Value = d.DepartamentoID, Text = d.Nome })
+                    .Select(d => new { value = d.DepartamentoID, text = d.Nome })
                     .ToList();
+
                 return Json(departamentos);
             }
             catch (Exception ex)
@@ -234,8 +301,9 @@ namespace Capitulo01.Areas.Docente.Controllers
             {
                 var cursos = cursoDAL
                     .ObterCursosPorDepartamento(actionID)
-                    .Select(c => new { Value = c.CursoID, Text = c.Nome })
+                    .Select(c => new { value = c.CursoID, text = c.Nome })
                     .ToList();
+
                 return Json(cursos);
             }
             catch (Exception ex)
@@ -250,8 +318,9 @@ namespace Capitulo01.Areas.Docente.Controllers
             {
                 var professores = cursoDAL
                     .ObterProfessoresForaDoCurso(actionID)
-                    .Select(p => new { Value = p.ProfessorID, Text = p.Nome })
+                    .Select(p => new { value = p.ProfessorID, text = p.Nome })
                     .ToList();
+
                 return Json(professores);
             }
             catch (Exception ex)
@@ -259,5 +328,6 @@ namespace Capitulo01.Areas.Docente.Controllers
                 return Json(new { error = ex.Message });
             }
         }
+
     }
 }

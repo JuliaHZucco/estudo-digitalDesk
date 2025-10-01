@@ -7,44 +7,74 @@
 
 @if (TempData["Message"] != null)
 {
-    <div class="alert alert-success" role="alert">
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
         @TempData["Message"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
 
-<div class="card-block">
-    <div class="card-header text-white bg-warning text-center h1">
-        Professores Registrados
+<div class="card shadow-sm">
+    <div class="card-header text-white bg-primary text-center py-3">
+        <h1 class="mb-0">Professores Registrados</h1>
     </div>
 
-    <div class="card-body">
-        <table class="table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@Html.DisplayFor(modelItem => item.ProfessorID)</td>
-                        <td>@Html.DisplayFor(modelItem => item.Nome)</td>
-                        <td>
-                            <a asp-action="Edit" asp-route-id="@item.ProfessorID">Edit</a> |
-                            <a asp-action="Details" asp-route-id="@item.ProfessorID">Details</a> |
-                            <a asp-action="Delete" asp-route-id="@item.ProfessorID">Delete</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+    <div class="card-body p-0">
+        <div class="d-flex justify-content-start p-3 bg-light">
+            <a asp-action="Create" class="btn btn-success">
+                <i class="fas fa-plus"></i> Cadastrar Novo Professor
+            </a>
+            <a asp-action="AdicionarProfessor" class="btn btn-primary ms-2">
+                <i class="fas fa-user-plus"></i> Adicionar Professor ao Curso
+            </a>
+            <a asp-action="VerificarUltimosRegistros" class="btn btn-info ms-2">
+                <i class="fas fa-history"></i> Ver Últimos Registros
+            </a>
+        </div>
 
-    <div class="card-footer bg-success text-center">
-        <a asp-action="Create" class="btn btn-success">Cadastrar Novo Professor</a>
-        <a asp-action="AdicionarProfessor" class="btn btn-primary">Adicionar Professor ao Curso</a>
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="fw-bold">ID</th>
+                            <th class="fw-bold">Nome</th>
+                            <th class="fw-bold text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="align-middle">@Html.DisplayFor(modelItem => item.ProfessorID)</td>
+                                <td class="align-middle">@Html.DisplayFor(modelItem => item.Nome)</td>
+                                <td class="text-center align-middle">
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Edit" asp-route-id="@item.ProfessorID" class="btn btn-primary btn-sm">
+                                            Editar
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@item.ProfessorID" class="btn btn-info btn-sm">
+                                            Detalhes
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.ProfessorID" class="btn btn-danger btn-sm">
+                                            Remover
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info m-3" role="alert">
+                <h4 class="alert-heading">Nenhum professor encontrado!</h4>
+                <p>Não há professores cadastrados no sistema.</p>
+                <hr>
+                <p class="mb-0">Use o botão acima para cadastrar o primeiro professor.</p>
+            </div>
+        }
     </div>
 </div>

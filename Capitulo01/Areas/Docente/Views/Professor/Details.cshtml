@@ -5,31 +5,40 @@
     Layout = "_LayoutIES";
 }
 
-<div class="card-block">
-    <div class="card-header text-white bg-warning text-center h1">
-        Detalhes do Professor
+<div class="card shadow-sm">
+    <div class="card-header text-white bg-info text-center py-3">
+        <h1 class="mb-0">Detalhes do Professor</h1>
     </div>
 
     <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-3">
-                @Html.DisplayNameFor(model => model.ProfessorID)
-            </dt>
-            <dd class="col-sm-9">
-                @Html.DisplayFor(model => model.ProfessorID)
-            </dd>
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <dl class="row">
+                    <dt class="col-sm-3 fw-bold text-muted">ID:</dt>
+                    <dd class="col-sm-9 fs-5">@Html.DisplayFor(model => model.ProfessorID)</dd>
 
-            <dt class="col-sm-3">
-                @Html.DisplayNameFor(model => model.Nome)
-            </dt>
-            <dd class="col-sm-9">
-                @Html.DisplayFor(model => model.Nome)
-            </dd>
-        </dl>
+                    <dt class="col-sm-3 fw-bold text-muted">Nome:</dt>
+                    <dd class="col-sm-9 fs-4 fw-bold text-primary">@Html.DisplayFor(model => model.Nome)</dd>
+                </dl>
+
+                <hr class="my-4">
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <a asp-action="Edit" asp-route-id="@Model.ProfessorID" class="btn btn-warning btn-lg me-md-2">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@Model.ProfessorID" class="btn btn-danger btn-lg me-md-2">
+                        <i class="fas fa-trash"></i> Excluir
+                    </a>
+                    <a asp-action="Index" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-list"></i> Voltar à Lista
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="card-footer bg-dark text-center">
-        <a asp-action="Edit" asp-route-id="@Model.ProfessorID" class="btn btn-warning">Editar</a>
-        <a asp-action="Index" class="btn btn-info">Retornar à listagem</a>
+    <div class="card-footer bg-light text-center text-muted">
+        <small>Informações detalhadas do professor selecionado</small>
     </div>
 </div>

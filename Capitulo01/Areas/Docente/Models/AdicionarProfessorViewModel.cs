@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Modelo.Docente
+namespace Capitulo01.Areas.Docente.Models
 {
     public class AdicionarProfessorViewModel
     {

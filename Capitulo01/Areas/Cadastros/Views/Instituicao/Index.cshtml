@@ -1,81 +1,74 @@
 ﻿@model IEnumerable<Capitulo01.Modelo.Cadastros.Instituicao>
->
 
 @{
+    ViewData["Title"] = "Instituições";
     Layout = "_LayoutIES";
 }
 
-@section Styles {
-
-    @if (TempData["Message"] != null)
-    {
-        <div class="alert alert-success" role="alert">
-            @TempData["Message"]
-        </div>
-    }
-    <environment include="Development">
-        <link rel="stylesheet" href="~/lib/datatables/css/jquery.dataTables.min.css" />
-    </environment>
-    <environment exclude="Development">
-        <link rel="stylesheet"
-              href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css"
-              asp-fallback-href="~/lib/datatables/css/jquery.dataTables.min.css"
-              asp-fallback-test-class="sr-only"
-              asp-fallback-test-property="position"
-              asp-fallback-test-value="absolute" />
-    </environment>
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Message"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 }
 
-<div class="card-block">
-    <div class="card-header text-white bg-primary text-center h1">
-        Instituições Registradas
+<div class="card shadow-sm">
+    <div class="card-header text-white bg-primary text-center py-3">
+        <h1 class="mb-0">Instituições Registradas</h1>
     </div>
 
-    <div class="card-body">
-        <table id="tabela_instituicoes">
-            <thead>
-                <tr>
-                    <th>@Html.DisplayNameFor(model => model.InstituicaoID)</th>
-                    <th>@Html.DisplayNameFor(model => model.Nome)</th>
-                    <th>@Html.DisplayNameFor(model => model.Endereco)</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@Html.DisplayFor(modelItem => item.InstituicaoID)</td>
-                        <td>@Html.DisplayFor(modelItem => item.Nome)</td>
-                        <td>@Html.DisplayFor(modelItem => item.Endereco)</td>
-                        <td>
-                            <a asp-action="Edit" asp-route-id="@item.InstituicaoID">Edit</a> |
-                            <a asp-action="Details" asp-route-id="@item.InstituicaoID">Details</a> |
-                            <a asp-action="Delete" asp-route-id="@item.InstituicaoID">Delete</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+    <div class="card-body p-0">
+        <div class="d-flex justify-content-start p-3 bg-light">
+            <a asp-action="Create" class="btn btn-success">
+                <i class="fas fa-plus"></i> Criar Nova Instituição
+            </a>
+        </div>
 
-    <div class="card-footer bg-success text-center">
-        <a asp-action="Create" class="btn btn-success">Criar uma nova instituição</a>
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="fw-bold">Nome</th>
+                            <th class="fw-bold">Endereço</th>
+                            <th class="fw-bold text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="align-middle">@Html.DisplayFor(modelItem => item.Nome)</td>
+                                <td class="align-middle">@Html.DisplayFor(modelItem => item.Endereco)</td>
+                                <td class="text-center align-middle">
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Edit" asp-route-id="@item.InstituicaoID" class="btn btn-primary btn-sm">
+                                            Editar
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@item.InstituicaoID" class="btn btn-info btn-sm">
+                                            Detalhes
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.InstituicaoID" class="btn btn-danger btn-sm">
+                                            Remover
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info m-3" role="alert">
+                <h4 class="alert-heading">Nenhuma instituição encontrada!</h4>
+                <p>Não há instituições cadastradas no sistema.</p>
+                <hr>
+                <p class="mb-0">Use o botão acima para cadastrar a primeira instituição.</p>
+            </div>
+        }
     </div>
 </div>
-
-@section ScriptPage {
-    <environment include="Development">
-        <script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
-    </environment>
-    <environment exclude="Development">
-        <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"
-                asp-fallback-src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
-    </environment>
-
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('#tabela_instituicoes').DataTable();
-        });
-    </script>
-}

@@ -1,46 +1,66 @@
-﻿@model Capitulo01.Modelo.Cadastros.Departamento;
+﻿@model Capitulo01.Modelo.Cadastros.Departamento
 
 @{
-    ViewData["Title"] = "Deletar Departamento";
+    ViewData["Title"] = "Excluir Departamento";
     Layout = "_LayoutIES";
 }
 
-<h3>Tem certeza que deseja deletar este departamento?</h3>
-
-<div class="card mt-3">
-    <div class="card-header bg-danger text-white">
-        Departamento
+<div class="card shadow-sm">
+    <div class="card-header text-white bg-danger text-center py-3">
+        <h1 class="mb-0">Excluir Departamento</h1>
     </div>
+
     <div class="card-body">
-        @{
-            await Html.RenderPartialAsync("~/Areas/Cadastros/Views/Departamento/_PartialDetailsContentCard.cshtml", Model);
-        }
-
-        <a asp-action="Index" class="btn btn-secondary">Voltar à lista</a>
-        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalConfirmationDelete">
-            Deletar Departamento
-        </button>
-    </div>
-</div>
-
-<div class="modal fade" id="modalConfirmationDelete" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form asp-action="Delete" method="post">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="id" value="@Model.DepartamentoID" />
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Confirmação de Remoção</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        <div class="alert alert-warning border-warning" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle fa-2x text-warning me-3"></i>
+                <div>
+                    <h4 class="alert-heading">Atenção!</h4>
+                    <p class="mb-0">Você tem certeza que deseja excluir este departamento? Esta ação irá remover também todos os cursos associados.</p>
                 </div>
-                <div class="modal-body">
-                    Deseja realmente deletar o departamento <strong>@Model.Nome</strong>?
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-danger">Sim, remover</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                </div>
-            </form>
+            </div>
         </div>
+
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title text-center mb-3">Dados do Departamento a ser Excluído</h5>
+
+                        <dl class="row">
+                            <dt class="col-sm-3 fw-bold">ID:</dt>
+                            <dd class="col-sm-9">@Html.DisplayFor(model => model.DepartamentoID)</dd>
+
+                            <dt class="col-sm-3 fw-bold">Nome:</dt>
+                            <dd class="col-sm-9 fw-bold text-danger">@Html.DisplayFor(model => model.Nome)</dd>
+
+                            <dt class="col-sm-3 fw-bold">Instituição:</dt>
+                            <dd class="col-sm-9">@Html.DisplayFor(model => model.Instituicao.Nome)</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <form asp-action="Delete" method="post" class="mt-4">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="DepartamentoID" />
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <button type="submit" class="btn btn-danger btn-lg me-md-2">
+                            <i class="fas fa-trash"></i> Confirmar Exclusão
+                        </button>
+                        <a asp-action="Details" asp-route-id="@Model.DepartamentoID" class="btn btn-info btn-lg me-md-2">
+                            <i class="fas fa-eye"></i> Ver Detalhes
+                        </a>
+                        <a asp-action="Index" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-arrow-left"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer bg-light text-center text-muted">
+        <small>Confirme a exclusão do departamento ou cancele a operação</small>
     </div>
 </div>

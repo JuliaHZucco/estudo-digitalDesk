@@ -17,9 +17,11 @@ namespace Capitulo01.Data.DAL.Cadastros
         }
         public IQueryable<Departamento> ObterDepartamentosPorInstituicao(long instituicaoID)
         {
-            return _context.Departamentos
-                           .Where(d => d.InstituicaoID == instituicaoID)
-                           .OrderBy(d => d.Nome);
+            var departamentos = _context.Departamentos
+                .Where(d => d.InstituicaoID == instituicaoID)
+                .OrderBy(d => d.Nome);
+
+            return departamentos;
         }
         public IQueryable<Departamento> ObterDepartamentosClassificadosPorNome()
         {

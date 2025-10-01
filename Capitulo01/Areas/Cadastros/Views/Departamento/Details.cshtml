@@ -1,35 +1,47 @@
-﻿@model Capitulo01.Modelo.Cadastros.Departamento;
+﻿@model Capitulo01.Modelo.Cadastros.Departamento
 
 @{
     ViewData["Title"] = "Detalhes do Departamento";
     Layout = "_LayoutIES";
 }
 
-@section Styles {
-    <environment include="Development">
-        <link rel="stylesheet" href="~/lib/font-awesome/css/all.css" />
-    </environment>
-    <environment exclude="Development">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/font-awesome.min.css"
-              asp-fallback-href="~/lib/font-awesome/css/all.css"
-              asp-fallback-test-class="sr-only"
-              asp-fallback-test-property="position"
-              asp-fallback-test-value="absolute" />
-    </environment>
-}
-
-<div class="card mt-3">
-    <div class="card-header bg-secondary text-white text-center h4">
-        Departamento
+<div class="card shadow-sm">
+    <div class="card-header text-white bg-info text-center py-3">
+        <h1 class="mb-0">Detalhes do Departamento</h1>
     </div>
 
-    @{
-        await Html.RenderPartialAsync("~/Areas/Cadastros/Views/Departamento/_PartialDetailsContentCard.cshtml", Model);
-    }
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <dl class="row">
+                    <dt class="col-sm-3 fw-bold text-muted">ID:</dt>
+                    <dd class="col-sm-9 fs-5">@Html.DisplayFor(model => model.DepartamentoID)</dd>
 
-    <div class="card-footer text-center bg-info text-white">
-        <a asp-action="Edit" asp-route-id="@Model.DepartamentoID" class="btn btn-warning">Editar</a>
-        <a asp-action="Index" class="btn btn-info">Voltar à lista</a>
+                    <dt class="col-sm-3 fw-bold text-muted">Nome:</dt>
+                    <dd class="col-sm-9 fs-4 fw-bold text-primary">@Html.DisplayFor(model => model.Nome)</dd>
+
+                    <dt class="col-sm-3 fw-bold text-muted">Instituição:</dt>
+                    <dd class="col-sm-9 fs-5">@Html.DisplayFor(model => model.Instituicao.Nome)</dd>
+                </dl>
+
+                <hr class="my-4">
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <a asp-action="Edit" asp-route-id="@Model.DepartamentoID" class="btn btn-warning btn-lg me-md-2">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@Model.DepartamentoID" class="btn btn-danger btn-lg me-md-2">
+                        <i class="fas fa-trash"></i> Excluir
+                    </a>
+                    <a asp-action="Index" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-list"></i> Voltar à Lista
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer bg-light text-center text-muted">
+        <small>Informações detalhadas do departamento selecionado</small>
     </div>
 </div>
-

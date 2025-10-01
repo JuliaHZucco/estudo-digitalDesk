@@ -1,54 +1,66 @@
-﻿@model Capitulo01.Modelo.Cadastros.Instituicao;
-
+﻿@model Capitulo01.Modelo.Cadastros.Instituicao
 
 @{
+    ViewData["Title"] = "Excluir Instituição";
     Layout = "_LayoutIES";
 }
 
-@section Styles {
-    <environment include="Development">
-        <link rel="stylesheet" href="~/lib/font-awesome/css/all.css" />
-    </environment>
-    <environment exclude="Development">
-        <link rel="stylesheet"
-              href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/font-awesome.min.css"
-              asp-fallback-href="~/lib/font-awesome/css/all.css"
-              asp-fallback-test-class="sr-only"
-              asp-fallback-test-property="position"
-              asp-fallback-test-value="absolute" />
-    </environment>
-}
-
-<div class="card-block">
-
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger text-center">
-            @TempData["ErrorMessage"]
-        </div>
-    }
-
-    <div class="card-header text-white bg-secondary text-center h1">
-        Exibindo uma instituição existente
+<div class="card shadow-sm">
+    <div class="card-header text-white bg-danger text-center py-3">
+        <h1 class="mb-0">Excluir Instituição</h1>
     </div>
 
     <div class="card-body">
-        @{
-            await Html.RenderPartialAsync("~/Areas/Cadastros/Views/Instituicao/_PartialDetailsContentCard.cshtml", Model);
-        }
+        <div class="alert alert-danger border-danger" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle fa-2x text-danger me-3"></i>
+                <div>
+                    <h4 class="alert-heading">Atenção!</h4>
+                    <p class="mb-0">Você tem certeza que deseja excluir esta instituição? Esta ação irá remover também todos os departamentos e cursos associados.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title text-center mb-3">Dados da Instituição a ser Excluída</h5>
+
+                        <dl class="row">
+                            <dt class="col-sm-3 fw-bold">ID:</dt>
+                            <dd class="col-sm-9">@Html.DisplayFor(model => model.InstituicaoID)</dd>
+
+                            <dt class="col-sm-3 fw-bold">Nome:</dt>
+                            <dd class="col-sm-9 fw-bold text-danger">@Html.DisplayFor(model => model.Nome)</dd>
+
+                            <dt class="col-sm-3 fw-bold">Endereço:</dt>
+                            <dd class="col-sm-9">@Html.DisplayFor(model => model.Endereco)</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <form asp-action="Delete" method="post" class="mt-4">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="InstituicaoID" />
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <button type="submit" class="btn btn-danger btn-lg me-md-2">
+                            <i class="fas fa-trash"></i> Confirmar Exclusão
+                        </button>
+                        <a asp-action="Details" asp-route-id="@Model.InstituicaoID" class="btn btn-info btn-lg me-md-2">
+                            <i class="fas fa-eye"></i> Ver Detalhes
+                        </a>
+                        <a asp-action="Index" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-arrow-left"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
-    <div class="card-footer bg-info text-center text-white">
-        <form asp-action="Delete" method="post">
-            <input type="hidden" asp-for="InstituicaoID" />
-            <input type="submit" value="Remover Instituição" class="btn btn-light" />
-            <a asp-action="Index" class="btn btn-info">Retornar à listagem de instituições</a>
-        </form>
+    <div class="card-footer bg-light text-center text-muted">
+        <small>Confirme a exclusão da instituição ou cancele a operação</small>
     </div>
 </div>
-
-@section ScriptPage {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
