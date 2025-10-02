@@ -302,8 +302,22 @@ namespace Capitulo01.Areas.Docente.Controllers
             if (cursosProfessoresSession != null)
             {   
                 //Desserializa a string JSON de volta para uma lista de objetos CursoProfessor 
-                cursosProfessor = JsonConvert.DeserializeObject<List<CursoProfessor>>(cursosProfessoresSession);
-            }
+                var cursosProfessorSession = JsonConvert.DeserializeObject<List<CursoProfessor>>(cursosProfessoresSession);
+
+                foreach (var item in cursosProfessorSession)
+                {
+                    var cursoProfessor = new CursoProfessor()
+                    {
+                        CursoID = item.CursoID,
+                        ProfessorID = item.ProfessorID,
+                        Curso = cursoDAL.ObterCursoPorId(item.CursoID),
+                        Professor = professorDAL.ObterProfessorPorId(item.ProfessorID)
+
+                    };
+                        cursosProfessor.Add(cursoProfessor);
+
+                    }
+                }
 
             return View(cursosProfessor);
         }

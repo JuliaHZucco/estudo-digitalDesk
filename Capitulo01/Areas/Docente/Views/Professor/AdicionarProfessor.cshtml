@@ -6,10 +6,9 @@
 }
 
 <!--Exibição da mensagem de sucesso via alert do Bootstrap caso ViewBag não seja nulo -->
-
-@if (ViewBag.Mensagem != null) 
+@if (ViewBag.Mensagem != null)
 {
-    <div class="alert alert-success alert-dismissible fade show" role="alert"> 
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
         <div class="d-flex align-items-center">
             <i class="fas fa-check-circle fa-2x text-success me-3"></i>
             <div>
@@ -50,11 +49,11 @@
 
                     <!-- Associa o label ao campo InstituiçãoID do modelo -->
                     <div class="form-group mb-4">
-                        <label asp-for="InstituicaoID" class="form-label fw-bold"> 
+                        <label asp-for="InstituicaoID" class="form-label fw-bold">
                             <i class="fas fa-university text-primary me-2"></i>
                             Instituição:
                         </label>
-                        <select asp-for="InstituicaoID" class="form-control form-select-lg" id="ddlInstituicao"> 
+                        <select asp-for="InstituicaoID" class="form-control form-select-lg" id="ddlInstituicao">
                             <option value="0">Selecione a instituição</option>
                             @if (ViewBag.Instituicoes != null)
                             {
@@ -139,190 +138,189 @@
 </div>
 
 <!-- Scripts Js para manipulação dos selects em cascata via AJAX -->
-
-@section Scripts { 
+@section Scripts {
     <script type="text/javascript">
-        $(document).ready(function () { //garante que script só sera executado após carregamento da página HTML, evita erros ao tentar acessar elementos não renderizados 
+                $(document).ready(function () { //garante que script só sera executado após carregamento da página HTML, evita erros ao tentar acessar elementos não renderizados
 
-//Função que verifica se todos os selects foram preenchidos com valores diferentes de 0, se sim, habilita o botão de submeter form 
+        //Função que verifica se todos os selects foram preenchidos com valores diferentes de 0, se sim, habilita o botão de submeter form
 
-            function verificarFormularioCompleto() {
-                var instituicao = $("#ddlInstituicao").val();
-                var departamento = $("#ddlDepartamento").val();
-                var curso = $("#ddlCurso").val();
-                var professor = $("#ddlProfessor").val();
+                    function verificarFormularioCompleto() {
+                        var instituicao = $("#ddlInstituicao").val();
+                        var departamento = $("#ddlDepartamento").val();
+                        var curso = $("#ddlCurso").val();
+                        var professor = $("#ddlProfessor").val();
 
-                var completo = instituicao && instituicao != "0" &&
-                               departamento && departamento != "0" &&
-                               curso && curso != "0" &&
-                               professor && professor != "0";
+                        var completo = instituicao && instituicao != "0" &&
+                                       departamento && departamento != "0" &&
+                                       curso && curso != "0" &&
+                                       professor && professor != "0";
 
-                $("#btnSubmit").prop('disabled', !completo);
-            }
-
-//Função disparada quando user seleciona instituição no dropdown, carrega departamentos via AJAX   
-
-            $("#ddlInstituicao").change(function () {
-                var instituicaoID = $(this).val(); //Pega valor da instituição selecionada 
-    
-//Reseta seguintes selects para estados iniciais 
-
-                $("#ddlDepartamento").empty().append('<option value="0">Carregando...</option>').prop('disabled', false);
-                $("#ddlCurso").empty().append('<option value="0">Aguarde seleção do departamento</option>').prop('disabled', true);
-                $("#ddlProfessor").empty().append('<option value="0">Aguarde seleção do curso</option>').prop('disabled', true);
-
-                verificarFormularioCompleto(); //Verifica se form está completo 
-
-//Se uma instituição foi selecionada, chama a função AJAX para carregar departamentos 
-
-                if (instituicaoID && instituicaoID != "0") {
-                    carregarDepartamentos(instituicaoID);
-                } else {
-                    $("#ddlDepartamento").empty().append('<option value="0">Primeiro selecione uma instituição</option>').prop('disabled', true);
-                    $("#ddlCurso").empty().append('<option value="0">Primeiro selecione um departamento</option>').prop('disabled', true);
-                    $("#ddlProfessor").empty().append('<option value="0">Primeiro selecione um curso</option>').prop('disabled', true);
-                }
-            });
-
-            $("#ddlDepartamento").change(function () {
-                var departamentoID = $(this).val(); //Pega valor de departamento 
-
-//Reseta selects de Curso e Professor para estados iniciais 
-
-                $("#ddlCurso").empty().append('<option value="0">Carregando...</option>').prop('disabled', false);
-                $("#ddlProfessor").empty().append('<option value="0">Aguarde seleção do curso</option>').prop('disabled', true);
-
-                verificarFormularioCompleto(); //Verifica form 
-
-//Se valor for válido, chama função AJAX para carregar cursos, senão, reseta os proximos selects 
-
-                if (departamentoID && departamentoID != "0") {
-                    carregarCursos(departamentoID);
-                } else {
-                    $("#ddlCurso").empty().append('<option value="0">Primeiro selecione um departamento</option>').prop('disabled', true);
-                    $("#ddlProfessor").empty().append('<option value="0">Primeiro selecione um curso</option>').prop('disabled', true);
-                }
-            });
-
-//Pega ID do curso, reseta select de professores e chama função AJAX para carregar prof disponíveis 
-
-            $("#ddlCurso").change(function () {
-                var cursoID = $(this).val();
-                console.log("Curso selecionado:", cursoID);
-
-                //Limpa opções que estão no select e depois adiciona nova opção dizendo que sistema está carregando
-                $("#ddlProfessor").empty().append('<option value="0">Carregando...</option>').prop('disabled', false);
-                //Prop(disabled, false) habilita a seleção de professores (dropdown do ddlProfessor fica ativo)
-                verificarFormularioCompleto();
-
-//Se curso não for nulo, chama AJAX para carregar professores , senão reseta select de professores 
-
-                if (cursoID && cursoID != "0") {
-                    carregarProfessores(cursoID);
-                } else {
-                    $("#ddlProfessor").empty().append('<option value="0">Primeiro selecione um curso</option>').prop('disabled', true);
-                }
-            });
-
-//Revalida o formulário quanddo user seleciona professor no dropdown 
-
-            $("#ddlProfessor").change(function () {
-                verificarFormularioCompleto();
-            });
-
-//Requisição GET via AJAX para controller ProfessorController para obter departamentos da instituição selecionada 
-
-            function carregarDepartamentos(instituicaoID) {
-                $.ajax({
-                    url: '@Url.Action("ObterDepartamentosPorInstituicao", "Professor", new { area = "Docente" })',
-                    type: 'GET',
-                    data: { actionID: instituicaoID },
-                    success: function (data) { //Se departamentos forem recebidos ->
-
-//Limpa select de departamentos e adiciona novas opções vindas do servidor (espera array de objetos com .value e .text)
-
-                        $("#ddlDepartamento").empty().append('<option value="0">Selecione o departamento</option>');
-
-                        if (data && data.length > 0) {
-                            $.each(data, function (index, item) {
-                                $("#ddlDepartamento").append('<option value="' + item.value + '">' + item.text + '</option>');
-                            });
-                        } else {
-                            $("#ddlDepartamento").append('<option value="0">Nenhum departamento encontrado</option>');
-                        }
-
-                        verificarFormularioCompleto();
-                    },
-                    error: function (xhr, status, error) { // em caso de erro
-                        //$("#ddlDepartamento") é seletor jQuery para elemento HTML com id ddlDepartamento, está selecionando dropdown que permite ao user escolher departamento
-                        //.empty() remove todos os elementos filhos do dropdown selecionado (limpa opções visíveis no select)
-                        //.append('<option value="0">Erro ao carregar departamentos</option>') adiciona no dropdown uma nova opção com valor 0 que contém o texto de erro
-                        $("#ddlDepartamento").empty().append('<option value="0">Erro ao carregar departamentos</option>');
-                        alert("Erro ao carregar departamentos.");
+                        $("#btnSubmit").prop('disabled', !completo);
                     }
-                });
-            }
 
-//Carrega lista de cursos associados a departamento específico a partir de AJAX
+        //Função disparada quando user seleciona instituição no dropdown, carrega departamentos via AJAX
 
-            function carregarCursos(departamentoID) { //departamentoID identifica o depart para o qual quer carregar os cursos 
-                $.ajax({ //requisições assícronas, dados atualizados dinamicamemte 
-                    url: '@Url.Action("ObterCursosPorDepartamento", "Professor", new { area = "Docente" })',
-                    type: 'GET', //estou pedindo dados ao servidor ao invés de enviar (POST) 
-                    data: { actionID: departamentoID }, //ActionID é o DepartamentoI. Objeto DepID será enviado ao servidor e usado no controller para recuperar os cursos daquele DepID 
-                    success: function (data) { //Data é o argumento que contém os dados retornados para o servidor 
+                    $("#ddlInstituicao").change(function () {
+                        var instituicaoID = $(this).val(); //Pega valor da instituição selecionada
 
-                        //Limpa opções existentes no dropdown ddlCurso e adiciona opção p selecionar o curso 
-                        $("#ddlCurso").empty().append('<option value="0">Selecione o curso</option>');
+        //Reseta seguintes selects para estados iniciais
 
-                        if (data && data.length > 0) { //Verifica se existe pelo menos 1 curso na lista
-                            $.each(data, function (index, item) { //$.each percorre todos os itens da lista de cursos (data é a lista de objetos com cursos)
-                                //Para cada item, nova opção é adicionada no ddlCurso 
-                                $("#ddlCurso").append('<option value="' + item.value + '">' + item.text + '</option>');
-                            });
+                        $("#ddlDepartamento").empty().append('<option value="0">Carregando...</option>').prop('disabled', false);
+                        $("#ddlCurso").empty().append('<option value="0">Aguarde seleção do departamento</option>').prop('disabled', true);
+                        $("#ddlProfessor").empty().append('<option value="0">Aguarde seleção do curso</option>').prop('disabled', true);
+
+                        verificarFormularioCompleto(); //Verifica se form está completo
+
+        //Se uma instituição foi selecionada, chama a função AJAX para carregar departamentos
+
+                        if (instituicaoID && instituicaoID != "0") {
+                            carregarDepartamentos(instituicaoID);
                         } else {
-                            $("#ddlCurso").append('<option value="0">Nenhum curso encontrado</option>');
+                            $("#ddlDepartamento").empty().append('<option value="0">Primeiro selecione uma instituição</option>').prop('disabled', true);
+                            $("#ddlCurso").empty().append('<option value="0">Primeiro selecione um departamento</option>').prop('disabled', true);
+                            $("#ddlProfessor").empty().append('<option value="0">Primeiro selecione um curso</option>').prop('disabled', true);
                         }
+                    });
 
-                        verificarFormularioCompleto();
-                    },
-                    error: function (xhr, status, error) {
-                        $("#ddlCurso").empty().append('<option value="0">Erro ao carregar cursos</option>');
-                        alert("Erro ao carregar cursos.");
-                    }
-                });
-            }
+                    $("#ddlDepartamento").change(function () {
+                        var departamentoID = $(this).val(); //Pega valor de departamento
 
-//Carrega professores associados a um curso específico
+        //Reseta selects de Curso e Professor para estados iniciais
 
-            function carregarProfessores(cursoID) {
-                $.ajax({
-                    //URL gerada dinamicamente usando sintaxe Razor (ARROBAurl.action), pede a lista de prof 
-                    url: '@Url.Action("ObterProfessoresForaDoCurso", "Professor", new { area = "Docente" })',
-                    type: 'GET',
-                    data: { actionID: cursoID },
-                    success: function (data) {
+                        $("#ddlCurso").empty().append('<option value="0">Carregando...</option>').prop('disabled', false);
+                        $("#ddlProfessor").empty().append('<option value="0">Aguarde seleção do curso</option>').prop('disabled', true);
 
-                        $("#ddlProfessor").empty().append('<option value="0">Selecione o professor</option>');
+                        verificarFormularioCompleto(); //Verifica form
 
-                        if (data && data.length > 0) {
-                            $.each(data, function (index, item) {
-                                $("#ddlProfessor").append('<option value="' + item.value + '">' + item.text + '</option>');
-                            });
+        //Se valor for válido, chama função AJAX para carregar cursos, senão, reseta os proximos selects
+
+                        if (departamentoID && departamentoID != "0") {
+                            carregarCursos(departamentoID);
                         } else {
-                            $("#ddlProfessor").append('<option value="0">Todos os professores já estão neste curso</option>');
+                            $("#ddlCurso").empty().append('<option value="0">Primeiro selecione um departamento</option>').prop('disabled', true);
+                            $("#ddlProfessor").empty().append('<option value="0">Primeiro selecione um curso</option>').prop('disabled', true);
                         }
+                    });
 
+        //Pega ID do curso, reseta select de professores e chama função AJAX para carregar prof disponíveis
+
+                    $("#ddlCurso").change(function () {
+                        var cursoID = $(this).val();
+                        console.log("Curso selecionado:", cursoID);
+
+                        //Limpa opções que estão no select e depois adiciona nova opção dizendo que sistema está carregando
+                        $("#ddlProfessor").empty().append('<option value="0">Carregando...</option>').prop('disabled', false);
+                        //Prop(disabled, false) habilita a seleção de professores (dropdown do ddlProfessor fica ativo)
                         verificarFormularioCompleto();
-                    },
-                    error: function (xhr, status, error) {
-                        $("#ddlProfessor").empty().append('<option value="0">Erro ao carregar professores</option>');
-                        alert("Erro ao carregar professores.");
-                    }
-                });
-            }
 
-            verificarFormularioCompleto();
-        });
+        //Se curso não for nulo, chama AJAX para carregar professores , senão reseta select de professores
+
+                        if (cursoID && cursoID != "0") {
+                            carregarProfessores(cursoID);
+                        } else {
+                            $("#ddlProfessor").empty().append('<option value="0">Primeiro selecione um curso</option>').prop('disabled', true);
+                        }
+                    });
+
+        //Revalida o formulário quanddo user seleciona professor no dropdown
+
+                    $("#ddlProfessor").change(function () {
+                        verificarFormularioCompleto();
+                    });
+
+        //Requisição GET via AJAX para controller ProfessorController para obter departamentos da instituição selecionada
+
+                    function carregarDepartamentos(instituicaoID) {
+                        $.ajax({
+                            url: '@Url.Action("ObterDepartamentosPorInstituicao", "Professor", new { area = "Docente" })',
+                            type: 'GET',
+                            data: { actionID: instituicaoID },
+                            success: function (data) { //Se departamentos forem recebidos ->
+
+        //Limpa select de departamentos e adiciona novas opções vindas do servidor (espera array de objetos com .value e .text)
+
+                                $("#ddlDepartamento").empty().append('<option value="0">Selecione o departamento</option>');
+
+                                if (data && data.length > 0) {
+                                    $.each(data, function (index, item) {
+                                        $("#ddlDepartamento").append('<option value="' + item.value + '">' + item.text + '</option>');
+                                    });
+                                } else {
+                                    $("#ddlDepartamento").append('<option value="0">Nenhum departamento encontrado</option>');
+                                }
+
+                                verificarFormularioCompleto();
+                            },
+                            error: function (xhr, status, error) { // em caso de erro
+                                //$("#ddlDepartamento") é seletor jQuery para elemento HTML com id ddlDepartamento, está selecionando dropdown que permite ao user escolher departamento
+                                //.empty() remove todos os elementos filhos do dropdown selecionado (limpa opções visíveis no select)
+                                //.append('<option value="0">Erro ao carregar departamentos</option>') adiciona no dropdown uma nova opção com valor 0 que contém o texto de erro
+                                $("#ddlDepartamento").empty().append('<option value="0">Erro ao carregar departamentos</option>');
+                                alert("Erro ao carregar departamentos.");
+                            }
+                        });
+                    }
+
+        //Carrega lista de cursos associados a departamento específico a partir de AJAX
+
+                    function carregarCursos(departamentoID) { //departamentoID identifica o depart para o qual quer carregar os cursos
+                        $.ajax({ //requisições assícronas, dados atualizados dinamicamemte
+                            url: '@Url.Action("ObterCursosPorDepartamento", "Professor", new { area = "Docente" })',
+                            type: 'GET', //estou pedindo dados ao servidor ao invés de enviar (POST)
+                            data: { actionID: departamentoID }, //ActionID é o DepartamentoI. Objeto DepID será enviado ao servidor e usado no controller para recuperar os cursos daquele DepID
+                            success: function (data) { //Data é o argumento que contém os dados retornados para o servidor
+
+                                //Limpa opções existentes no dropdown ddlCurso e adiciona opção p selecionar o curso
+                                $("#ddlCurso").empty().append('<option value="0">Selecione o curso</option>');
+
+                                if (data && data.length > 0) { //Verifica se existe pelo menos 1 curso na lista
+                                    $.each(data, function (index, item) { //$.each percorre todos os itens da lista de cursos (data é a lista de objetos com cursos)
+                                        //Para cada item, nova opção é adicionada no ddlCurso
+                                        $("#ddlCurso").append('<option value="' + item.value + '">' + item.text + '</option>');
+                                    });
+                                } else {
+                                    $("#ddlCurso").append('<option value="0">Nenhum curso encontrado</option>');
+                                }
+
+                                verificarFormularioCompleto();
+                            },
+                            error: function (xhr, status, error) {
+                                $("#ddlCurso").empty().append('<option value="0">Erro ao carregar cursos</option>');
+                                alert("Erro ao carregar cursos.");
+                            }
+                        });
+                    }
+
+        //Carrega professores associados a um curso específico
+
+                    function carregarProfessores(cursoID) {
+                        $.ajax({
+                            //URL gerada dinamicamente usando sintaxe Razor (ARROBAurl.action), pede a lista de prof
+                            url: '@Url.Action("ObterProfessoresForaDoCurso", "Professor", new { area = "Docente" })',
+                            type: 'GET',
+                            data: { actionID: cursoID },
+                            success: function (data) {
+
+                                $("#ddlProfessor").empty().append('<option value="0">Selecione o professor</option>');
+
+                                if (data && data.length > 0) {
+                                    $.each(data, function (index, item) {
+                                        $("#ddlProfessor").append('<option value="' + item.value + '">' + item.text + '</option>');
+                                    });
+                                } else {
+                                    $("#ddlProfessor").append('<option value="0">Todos os professores já estão neste curso</option>');
+                                }
+
+                                verificarFormularioCompleto();
+                            },
+                            error: function (xhr, status, error) {
+                                $("#ddlProfessor").empty().append('<option value="0">Erro ao carregar professores</option>');
+                                alert("Erro ao carregar professores.");
+                            }
+                        });
+                    }
+
+                    verificarFormularioCompleto();
+                });
     </script>
 }

@@ -15,7 +15,7 @@ namespace Capitulo01.Modelo.Cadastros
 
         [Required(ErrorMessage = "O nome do curso é obrigatório.")]
         [StringLength(100, ErrorMessage = "O nome não pode exceder 100 caracteres.")]
-        public string Nome { get; set; } = string.Empty;
+        public string Nome { get; set; } 
 
         [Required(ErrorMessage = "Selecione um departamento.")]
         public long DepartamentoID { get; set; } 
